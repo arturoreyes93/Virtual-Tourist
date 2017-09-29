@@ -84,6 +84,10 @@
                                         </view>
                                     </collectionViewCell>
                                 </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="JiS-qs-8dK" id="Mjs-cy-avC"/>
+                                    <outlet property="delegate" destination="JiS-qs-8dK" id="fJw-Ne-Qfn"/>
+                                </connections>
                             </collectionView>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ul3-CE-5Pc">
                                 <rect key="frame" x="0.0" y="64" width="375" height="181"/>

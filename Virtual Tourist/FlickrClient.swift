@@ -102,9 +102,7 @@ class FlickrClient: NSObject {
                 let imageURL = URL(string: imageUrlString)
                 if let imageData = try? Data(contentsOf: imageURL!) {
                     performUIUpdatesOnMain {
-                        self.setUIEnabled(true)
-                        self.photoImageView.image = UIImage(data: imageData)
-                        self.photoTitleLabel.text = photoTitle ?? "(Untitled)"
+                        //set UI
                     }
                 } else {
                     sendError("Image does not exist at \(imageURL)")
@@ -122,7 +120,7 @@ class FlickrClient: NSObject {
     
     private func bboxString() -> String {
         // ensure bbox is bounded by minimum and maximums
-        if let latitude = Double(Collection.latitude!), let longitude = Double(Collection.longitude!) {
+        if let latitude = Double("00000"), let longitude = Double("0000") {
             let minimumLon = max(longitude - Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.0)
             let minimumLat = max(latitude - Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.0)
             let maximumLon = min(longitude + Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.1)
