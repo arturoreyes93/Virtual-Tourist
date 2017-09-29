@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DD05C9AD1F7F02520096ED7C /* Photo+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9A91F7F02520096ED7C /* Photo+CoreDataClass.swift */; };
+		DD05C9AE1F7F02520096ED7C /* Photo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9AA1F7F02520096ED7C /* Photo+CoreDataProperties.swift */; };
+		DD05C9AF1F7F02520096ED7C /* Collection+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9AB1F7F02520096ED7C /* Collection+CoreDataClass.swift */; };
+		DD05C9B01F7F02520096ED7C /* Collection+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9AC1F7F02520096ED7C /* Collection+CoreDataProperties.swift */; };
 		DD51FFF71F7D81B900497F96 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD51FFF61F7D81B900497F96 /* Constants.swift */; };
 		DD51FFF91F7D878B00497F96 /* GCDBlackBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD51FFF81F7D878B00497F96 /* GCDBlackBox.swift */; };
-		DD51FFFB1F7D8E4700497F96 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD51FFFA1F7D8E4700497F96 /* Collection.swift */; };
-		DD51FFFD1F7D8E6000497F96 /* CollectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD51FFFC1F7D8E6000497F96 /* CollectionData.swift */; };
 		DD51FFFF1F7DBE4D00497F96 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD51FFFE1F7DBE4D00497F96 /* CoreDataStack.swift */; };
 		DD5B2B461F7C610300840505 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5B2B451F7C610300840505 /* AppDelegate.swift */; };
 		DD5B2B481F7C610300840505 /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5B2B471F7C610300840505 /* MapVC.swift */; };
@@ -42,10 +44,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DD05C9A91F7F02520096ED7C /* Photo+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataClass.swift"; sourceTree = "<group>"; };
+		DD05C9AA1F7F02520096ED7C /* Photo+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		DD05C9AB1F7F02520096ED7C /* Collection+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+CoreDataClass.swift"; sourceTree = "<group>"; };
+		DD05C9AC1F7F02520096ED7C /* Collection+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DD51FFF61F7D81B900497F96 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DD51FFF81F7D878B00497F96 /* GCDBlackBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GCDBlackBox.swift; sourceTree = "<group>"; };
-		DD51FFFA1F7D8E4700497F96 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
-		DD51FFFC1F7D8E6000497F96 /* CollectionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionData.swift; sourceTree = "<group>"; };
 		DD51FFFE1F7DBE4D00497F96 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		DD5B2B421F7C610300840505 /* Virtual Tourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Virtual Tourist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD5B2B451F7C610300840505 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -93,6 +97,10 @@
 		DD5B2B391F7C610200840505 = {
 			isa = PBXGroup;
 			children = (
+				DD05C9A91F7F02520096ED7C /* Photo+CoreDataClass.swift */,
+				DD05C9AA1F7F02520096ED7C /* Photo+CoreDataProperties.swift */,
+				DD05C9AB1F7F02520096ED7C /* Collection+CoreDataClass.swift */,
+				DD05C9AC1F7F02520096ED7C /* Collection+CoreDataProperties.swift */,
 				DD5B2B441F7C610300840505 /* Virtual Tourist */,
 				DD5B2B5C1F7C610300840505 /* Virtual TouristTests */,
 				DD5B2B671F7C610300840505 /* Virtual TouristUITests */,
@@ -119,14 +127,12 @@
 				DD5B2B761F7C6A3400840505 /* AlbumVC.swift */,
 				DD5B2B781F7C890B00840505 /* FlickrClient.swift */,
 				DD51FFF61F7D81B900497F96 /* Constants.swift */,
-				DD51FFFA1F7D8E4700497F96 /* Collection.swift */,
-				DD51FFFC1F7D8E6000497F96 /* CollectionData.swift */,
 				DD5B2B491F7C610300840505 /* Main.storyboard */,
+				DD51FFFE1F7DBE4D00497F96 /* CoreDataStack.swift */,
 				DD5B2B4F1F7C610300840505 /* Assets.xcassets */,
 				DD5B2B511F7C610300840505 /* LaunchScreen.storyboard */,
 				DD5B2B541F7C610300840505 /* Info.plist */,
 				DD5B2B4C1F7C610300840505 /* Virtual_Tourist.xcdatamodeld */,
-				DD51FFFE1F7DBE4D00497F96 /* CoreDataStack.swift */,
 			);
 			path = "Virtual Tourist";
 			sourceTree = "<group>";
@@ -283,7 +289,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD51FFFD1F7D8E6000497F96 /* CollectionData.swift in Sources */,
+				DD05C9AD1F7F02520096ED7C /* Photo+CoreDataClass.swift in Sources */,
+				DD05C9B01F7F02520096ED7C /* Collection+CoreDataProperties.swift in Sources */,
+				DD05C9AF1F7F02520096ED7C /* Collection+CoreDataClass.swift in Sources */,
 				DD5B2B481F7C610300840505 /* MapVC.swift in Sources */,
 				DD5B2B791F7C890B00840505 /* FlickrClient.swift in Sources */,
 				DD5B2B4E1F7C610300840505 /* Virtual_Tourist.xcdatamodeld in Sources */,
@@ -291,8 +299,8 @@
 				DD51FFFF1F7DBE4D00497F96 /* CoreDataStack.swift in Sources */,
 				DD5B2B461F7C610300840505 /* AppDelegate.swift in Sources */,
 				DD51FFF71F7D81B900497F96 /* Constants.swift in Sources */,
+				DD05C9AE1F7F02520096ED7C /* Photo+CoreDataProperties.swift in Sources */,
 				DD51FFF91F7D878B00497F96 /* GCDBlackBox.swift in Sources */,
-				DD51FFFB1F7D8E4700497F96 /* Collection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
