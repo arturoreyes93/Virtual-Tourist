@@ -60,7 +60,6 @@
         <!--AlbumVC-->
         <scene sceneID="jnt-EF-4lD">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="1kP-Yh-kUh" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController title="AlbumVC" id="JiS-qs-8dK" customClass="AlbumVC" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Lah-sX-raY">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -103,7 +102,13 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="m84-a8-Ww4"/>
                     </view>
+                    <connections>
+                        <outlet property="collectionView" destination="7FJ-bG-bLb" id="Yv4-5l-Mhf"/>
+                        <outlet property="flowLayout" destination="PhR-KI-h2T" id="JNL-hG-hkT"/>
+                        <outlet property="mapDisplayView" destination="ul3-CE-5Pc" id="WNg-bZ-Kkm"/>
+                    </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1kP-Yh-kUh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="848.79999999999995" y="133.5832083958021"/>
         </scene>
