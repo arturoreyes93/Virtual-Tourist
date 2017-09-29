@@ -109,11 +109,12 @@ class FlickrClient: NSObject {
                 }
             }
             
-            
         }
         
         // start the task!
         task.resume()
+        
+        return task
         
     }
     
