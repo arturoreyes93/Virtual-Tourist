@@ -18,6 +18,8 @@ extension Collection {
     }
 
     @NSManaged public var createdAt: NSDate?
+    @NSManaged public var latitude: Double
+    @NSManaged public var longitude: Double
     @NSManaged public var photos: NSSet?
 
 }

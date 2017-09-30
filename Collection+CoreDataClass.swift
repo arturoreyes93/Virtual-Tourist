@@ -9,8 +9,23 @@
 
 import Foundation
 import CoreData
+import MapKit
 
 @objc(Collection)
-public class Collection: NSManagedObject {
+public class Collection: NSManagedObject, MKAnnotation {
+    
+    public var coordinate: CLLocationCoordinate2D {
+        return CLLocationCoordinate2DMake(latitude, longitude)
+    }
+    convenience init(latitude: Double, longitude: Double, context: NSManagedObjectContext) {
+        if let entity = NSEntityDescription.entity(forEntityName: "Collection", in: context) {
+            self.init(entity: entity, insertInto: context)
+            self.createdAt = NSDate()
+            self.latitude = latitude
+            self.longitude = longitude
+        } else {
+            fatalError("Unable to find Entity name!")
+        }
+    }
 
 }

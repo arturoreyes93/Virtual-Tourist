@@ -22,6 +22,9 @@ struct CoreDataStack {
     internal let backgroundContext: NSManagedObjectContext
     let context: NSManagedObjectContext
     
+    static let sharedInstance = CoreDataStack(modelName: "Virtual_Tourist")!
+    
+
     // MARK: Initializers
     
     init?(modelName: String) {

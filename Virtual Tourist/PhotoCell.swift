@@ -1,17 +1,16 @@
 //
-//  Photo+CoreDataClass.swift
+//  PhotoCell.swift
 //  Virtual Tourist
 //
 //  Created by Arturo Reyes on 9/29/17.
 //  Copyright © 2017 Arturo Reyes. All rights reserved.
 //
-//
 
 import Foundation
-import CoreData
+import UIKit
 
-@objc(Photo)
-public class Photo: NSManagedObject {
+class PhotoCell : UICollectionViewCell {
     
-
+    @IBOutlet weak var photoView: UIImageView!
+    
 }
