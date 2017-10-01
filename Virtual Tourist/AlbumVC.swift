@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import MapKit
+import CoreData
 
 class AlbumVC: UIViewController {
     
@@ -17,6 +18,9 @@ class AlbumVC: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     
     var album : Collection!
+    let stack = CoreDataStack.sharedInstance
+    var fetchedResultsController : NSFetchedResultsController<Photo>!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +28,9 @@ class AlbumVC: UIViewController {
         setFlowLayout()
         setMapDisplay(album)
         
+        if fetchPhotos().isEmpty {
+            
+        }
     }
     
     
@@ -45,11 +52,70 @@ class AlbumVC: UIViewController {
         mapDisplayView.region = region
     }
     
+    func fetchPhotos() -> [Photo] {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
+        var photos = [Photo]()
+        
+        if let fc = fetchedResultsController {
+            do {
+                try fc.performFetch()
+                photos = fc.fetchedObjects!
+            } catch let e as NSError {
+                print("Error while trying to perform fetch: \n\(e)\n\(fetchedResultsController)")
+            }
+        }
+        
+        return photos
+    }
     
-    // MARK: UICollectionViewDataSource
+    func getPhotoURLs() {
+        FlickrClient.sharedInstance.getPhotoURLsWithLocation(latitude: album.latitude, longitude: album.longitude) { (success, results, errorString) in
+            if success {
+                if let photoArray = results {
+                    for photoURL in photoArray {
+                        _ = Photo(url: photoURL)
+                        self.stack.save()
+                    }
+                } else {
+                    print(errorString)
+                }
+            }
+        }
+    }
+}
 
-
+extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
+        let fetchedObject = fetchedResultsController.object(at: indexPath)
+        
+        if let photo = fetchedObject.imageData {
+            cell.photoView.image = UIImage(data: photo as Data)
+        }
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let numberOfItems: Int
+        guard let fetchedItems = fetchedResultsController.fetchedObjects?.count else {
+            numberOfItems = 0
+            return numberOfItems
+        }
+        numberOfItems = fetchedItems
+        return numberOfItems
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+    }
     
 }
+
+extension AlbumVC : NSFetchedResultsControllerDelegate {
+    
+}
+
 

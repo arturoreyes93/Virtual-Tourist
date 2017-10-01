@@ -11,7 +11,6 @@
 		DD05C9AE1F7F02520096ED7C /* Photo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9AA1F7F02520096ED7C /* Photo+CoreDataProperties.swift */; };
 		DD05C9AF1F7F02520096ED7C /* Collection+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9AB1F7F02520096ED7C /* Collection+CoreDataClass.swift */; };
 		DD05C9B01F7F02520096ED7C /* Collection+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9AC1F7F02520096ED7C /* Collection+CoreDataProperties.swift */; };
-		DD05C9B21F7F07820096ED7C /* CoreDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9B11F7F07820096ED7C /* CoreDataViewController.swift */; };
 		DD05C9B41F7F17550096ED7C /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD05C9B31F7F17550096ED7C /* PhotoCell.swift */; };
 		DD51FFF71F7D81B900497F96 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD51FFF61F7D81B900497F96 /* Constants.swift */; };
 		DD51FFF91F7D878B00497F96 /* GCDBlackBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD51FFF81F7D878B00497F96 /* GCDBlackBox.swift */; };
@@ -50,7 +49,6 @@
 		DD05C9AA1F7F02520096ED7C /* Photo+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DD05C9AB1F7F02520096ED7C /* Collection+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+CoreDataClass.swift"; sourceTree = "<group>"; };
 		DD05C9AC1F7F02520096ED7C /* Collection+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		DD05C9B11F7F07820096ED7C /* CoreDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataViewController.swift; sourceTree = "<group>"; };
 		DD05C9B31F7F17550096ED7C /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		DD05C9B51F7F1D210096ED7C /* Virtual_Tourist 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Virtual_Tourist 2.xcdatamodel"; sourceTree = "<group>"; };
 		DD51FFF61F7D81B900497F96 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -72,6 +70,7 @@
 		DD5B2B6A1F7C610300840505 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD5B2B761F7C6A3400840505 /* AlbumVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumVC.swift; sourceTree = "<group>"; };
 		DD5B2B781F7C890B00840505 /* FlickrClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrClient.swift; sourceTree = "<group>"; };
+		DDFC5E121F8053BC0066ABD0 /* Virtual_Tourist 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Virtual_Tourist 3.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,7 +132,6 @@
 				DD5B2B781F7C890B00840505 /* FlickrClient.swift */,
 				DD51FFF61F7D81B900497F96 /* Constants.swift */,
 				DD5B2B491F7C610300840505 /* Main.storyboard */,
-				DD05C9B11F7F07820096ED7C /* CoreDataViewController.swift */,
 				DD51FFFE1F7DBE4D00497F96 /* CoreDataStack.swift */,
 				DD05C9B31F7F17550096ED7C /* PhotoCell.swift */,
 				DD5B2B4F1F7C610300840505 /* Assets.xcassets */,
@@ -298,7 +296,6 @@
 			files = (
 				DD05C9B41F7F17550096ED7C /* PhotoCell.swift in Sources */,
 				DD05C9AD1F7F02520096ED7C /* Photo+CoreDataClass.swift in Sources */,
-				DD05C9B21F7F07820096ED7C /* CoreDataViewController.swift in Sources */,
 				DD05C9B01F7F02520096ED7C /* Collection+CoreDataProperties.swift in Sources */,
 				DD05C9AF1F7F02520096ED7C /* Collection+CoreDataClass.swift in Sources */,
 				DD5B2B481F7C610300840505 /* MapVC.swift in Sources */,
@@ -612,10 +609,11 @@
 		DD5B2B4C1F7C610300840505 /* Virtual_Tourist.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				DDFC5E121F8053BC0066ABD0 /* Virtual_Tourist 3.xcdatamodel */,
 				DD05C9B51F7F1D210096ED7C /* Virtual_Tourist 2.xcdatamodel */,
 				DD5B2B4D1F7C610300840505 /* Virtual_Tourist.xcdatamodel */,
 			);
-			currentVersion = DD05C9B51F7F1D210096ED7C /* Virtual_Tourist 2.xcdatamodel */;
+			currentVersion = DDFC5E121F8053BC0066ABD0 /* Virtual_Tourist 3.xcdatamodel */;
 			path = Virtual_Tourist.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
