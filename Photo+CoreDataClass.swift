@@ -14,10 +14,11 @@ import CoreData
 public class Photo: NSManagedObject {
     
     
-    convenience init(url: String) {
+    convenience init(url: String, imageData: NSData) {
         if let entity = NSEntityDescription.entity(forEntityName: "Photo", in: CoreDataStack.sharedInstance.context) {
             self.init(entity: entity, insertInto: CoreDataStack.sharedInstance.context)
             self.url = url
+            self.imageData = imageData
         } else {
             fatalError("Failed to initialize Photo")
         }

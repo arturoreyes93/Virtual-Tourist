@@ -68,7 +68,7 @@ class FlickrClient: NSObject {
         
     }
     
-    func getPhotoURLsWithLocation(latitude: Double, longitude: Double, _ completionHandlerForURLs: @escaping (_ success: Bool, _ results: [String]?, _ errorString: String?) -> Void) {
+    func getURLArray(latitude: Double, longitude: Double, _ completionHandlerForURLs: @escaping (_ success: Bool, _ results: [String]?, _ errorString: String?) -> Void) {
         
         let _ = taskForSearch(methodParameters) { (result, error, errorString) in
             
@@ -80,7 +80,7 @@ class FlickrClient: NSObject {
             
             /* GUARD: Is "photos" key in our result? */
             guard let photosDictionary = result[Constants.FlickrResponseKeys.Photos] as? [String:AnyObject] else {
-                sendError("Cannot find keys '\(Constants.FlickrResponseKeys.Photos)' in \(parsedResult)")
+                sendError("Cannot find keys '\(Constants.FlickrResponseKeys.Photos)' in \(result)")
                 return
             }
             
@@ -110,7 +110,7 @@ class FlickrClient: NSObject {
                     if let urlString = photo[Constants.FlickrResponseKeys.MediumURL] as? String {
                         photoURls.append(urlString)
                     } else {
-                        sendError("No URL found in photo")
+                        print("No URL found in photo")
                     }
                 }
                 //let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
@@ -136,6 +136,41 @@ class FlickrClient: NSObject {
             
             completionHandlerForURLs(true, photoURLs, nil)
         }
+    }
+    
+    func getImageData(_ url: URL, completionHandlerForGetImage: @escaping (_ data: NSData?, _ error: NSError?, _ errorString: String?) -> Void) -> URLSessionDataTask {
+        let task = session.dataTask(with: url) { (data, response, error) in
+            
+            func sendError(_ error: String) {
+                print(error)
+                let userInfo = [NSLocalizedDescriptionKey : error]
+                completionHandlerForGetImage(nil, NSError(domain: "getImageData", code: 1, userInfo: userInfo), error)
+            }
+            
+            /* GUARD: Was there an error? */
+            guard (error == nil) else {
+                sendError("There was an error with your request")
+                print("There was an error with request: \(error)")
+                return
+            }
+            
+            /* GUARD: Did we get a successful 2XX response? */
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                sendError("Your request returned a status code other than 2xx!")
+                return
+            }
+            
+            /* GUARD: Was there any data returned? */
+            guard data != nil else {
+                sendError("No data was returned by the request!")
+                return
+            }
+        }
+        
+        // start the task!
+        task.resume()
+        return task
+    
     }
     
     func parseDataWithCompletionHandler(_ data: Data, completionHandlerForParse: @escaping (_ result: AnyObject?, _ error: NSError?, _ errorString: String?) -> Void) {

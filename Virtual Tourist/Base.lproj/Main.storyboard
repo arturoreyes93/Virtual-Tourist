@@ -85,15 +85,21 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="V8m-Ku-mBh">
                                                     <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                                 </imageView>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="McC-3k-NeN">
+                                                    <rect key="frame" x="15" y="15" width="20" height="20"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                         </view>
                                         <constraints>
+                                            <constraint firstItem="McC-3k-NeN" firstAttribute="centerY" secondItem="4xb-Zu-9Tu" secondAttribute="centerY" id="6VQ-tW-9c5"/>
                                             <constraint firstAttribute="trailing" secondItem="V8m-Ku-mBh" secondAttribute="trailing" id="8Ha-5d-rd4"/>
                                             <constraint firstAttribute="bottom" secondItem="V8m-Ku-mBh" secondAttribute="bottom" id="KFf-CJ-bu2"/>
                                             <constraint firstItem="V8m-Ku-mBh" firstAttribute="top" secondItem="4xb-Zu-9Tu" secondAttribute="top" id="PWc-wt-PYZ"/>
+                                            <constraint firstItem="McC-3k-NeN" firstAttribute="centerX" secondItem="4xb-Zu-9Tu" secondAttribute="centerX" id="jbt-NF-MuO"/>
                                             <constraint firstItem="V8m-Ku-mBh" firstAttribute="leading" secondItem="4xb-Zu-9Tu" secondAttribute="leading" id="osF-vz-Hru"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="activityIndicator" destination="McC-3k-NeN" id="UbB-Rv-8PG"/>
                                             <outlet property="photoView" destination="V8m-Ku-mBh" id="ALf-pJ-f5c"/>
                                         </connections>
                                     </collectionViewCell>
@@ -106,21 +112,32 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ul3-CE-5Pc">
                                 <rect key="frame" x="0.0" y="64" width="375" height="181"/>
                             </mapView>
+                            <button opaque="NO" alpha="0.80000000000000004" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LDe-cS-vcN">
+                                <rect key="frame" x="0.0" y="626" width="375" height="41"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="pressBottomButton:" destination="JiS-qs-8dK" eventType="touchUpInside" id="7bw-6i-5c4"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="ul3-CE-5Pc" firstAttribute="leading" secondItem="m84-a8-Ww4" secondAttribute="leading" id="5CT-ZI-8bR"/>
                             <constraint firstItem="7FJ-bG-bLb" firstAttribute="trailing" secondItem="m84-a8-Ww4" secondAttribute="trailing" id="93Y-Cs-0mK"/>
                             <constraint firstItem="7FJ-bG-bLb" firstAttribute="bottom" secondItem="m84-a8-Ww4" secondAttribute="bottom" id="J6i-17-Rqo"/>
+                            <constraint firstItem="LDe-cS-vcN" firstAttribute="bottom" secondItem="m84-a8-Ww4" secondAttribute="bottom" id="aML-OC-e1H"/>
                             <constraint firstItem="7FJ-bG-bLb" firstAttribute="leading" secondItem="m84-a8-Ww4" secondAttribute="leading" id="bGN-Sw-ovw"/>
                             <constraint firstItem="ul3-CE-5Pc" firstAttribute="width" secondItem="7FJ-bG-bLb" secondAttribute="height" multiplier="375:422" id="g9t-4q-9sc"/>
+                            <constraint firstItem="LDe-cS-vcN" firstAttribute="leading" secondItem="m84-a8-Ww4" secondAttribute="leading" id="ip6-CV-vpf"/>
                             <constraint firstItem="ul3-CE-5Pc" firstAttribute="top" secondItem="m84-a8-Ww4" secondAttribute="top" id="jfM-ax-yKu"/>
+                            <constraint firstItem="LDe-cS-vcN" firstAttribute="trailing" secondItem="m84-a8-Ww4" secondAttribute="trailing" id="nnm-mm-rzi"/>
                             <constraint firstItem="ul3-CE-5Pc" firstAttribute="trailing" secondItem="m84-a8-Ww4" secondAttribute="trailing" id="qSw-FE-gn7"/>
                             <constraint firstItem="7FJ-bG-bLb" firstAttribute="top" secondItem="ul3-CE-5Pc" secondAttribute="bottom" id="yAD-NA-JT4"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="m84-a8-Ww4"/>
                     </view>
                     <connections>
+                        <outlet property="bottomButton" destination="LDe-cS-vcN" id="Veu-We-jBv"/>
                         <outlet property="collectionView" destination="7FJ-bG-bLb" id="7LS-Fi-6AK"/>
                         <outlet property="flowLayout" destination="PhR-KI-h2T" id="JNL-hG-hkT"/>
                         <outlet property="mapDisplayView" destination="ul3-CE-5Pc" id="WNg-bZ-Kkm"/>

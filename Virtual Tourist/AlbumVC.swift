@@ -16,11 +16,17 @@ class AlbumVC: UIViewController {
     @IBOutlet weak var mapDisplayView: MKMapView!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var bottomButton: UIButton!
     
     var album : Collection!
     let stack = CoreDataStack.sharedInstance
     var fetchedResultsController : NSFetchedResultsController<Photo>!
-    
+    var deleteArray: [IndexPath] = [] {
+        didSet {
+            var title = deleteArray.isEmpty ? "New Collection" : "Delete Photos"
+            bottomButton.setTitle(title, for: UIControlState.normal)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,10 +35,26 @@ class AlbumVC: UIViewController {
         setMapDisplay(album)
         
         if fetchPhotos().isEmpty {
-            
+            downloadPhotos()
         }
     }
     
+    @IBAction func pressBottomButton(_ sender: Any) {
+        if deleteArray.isEmpty {
+            for photo in fetchedResultsController.fetchedObjects! {
+                fetchedResultsController.managedObjectContext.delete(photo)
+            }
+            downloadPhotos()
+        } else {
+            for index in deleteArray {
+                let photo = fetchedResultsController.object(at: index)
+                fetchedResultsController.managedObjectContext.delete(photo)
+            }
+            deleteArray.removeAll()
+            stack.save()
+        }
+        
+    }
     
     func setFlowLayout() {
         let space: CGFloat = 3.0
@@ -70,17 +92,26 @@ class AlbumVC: UIViewController {
         return photos
     }
     
-    func getPhotoURLs() {
-        FlickrClient.sharedInstance.getPhotoURLsWithLocation(latitude: album.latitude, longitude: album.longitude) { (success, results, errorString) in
+    func downloadPhotos() {
+        FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude) { (success, results, errorString) in
             if success {
-                if let photoArray = results {
-                    for photoURL in photoArray {
-                        _ = Photo(url: photoURL)
-                        self.stack.save()
+                if let urlArray = results {
+                    for photoURL in urlArray {
+                        FlickrClient.sharedInstance.getImageData(URL(string: photoURL)!) { (data, error, errorSt) in
+                            if let photoData = data {
+                                _ = Photo(url: photoURL, imageData: photoData)
+                                self.stack.save()
+                            } else {
+                                print(errorSt!)
+                            }
+                        }
                     }
+    
                 } else {
-                    print(errorString)
+                    print("Could not find URLs in results")
                 }
+            } else {
+                print(errorString!)
             }
         }
     }
@@ -90,6 +121,7 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
+        cell.activityIndicator.isHidden = true
         let fetchedObject = fetchedResultsController.object(at: indexPath)
         
         if let photo = fetchedObject.imageData {
@@ -112,6 +144,12 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
         
     }
     
+    func setPhoto(_ cell: PhotoCell, _ photo: Photo) {
+        performUIUpdatesOnMain {
+            cell.activityIndicator.startAnimating()
+            cell.activityIndicator.isHidden = false
+        }
+    }
 }
 
 extension AlbumVC : NSFetchedResultsControllerDelegate {
