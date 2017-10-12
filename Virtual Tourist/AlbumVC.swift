@@ -21,9 +21,9 @@ class AlbumVC: UIViewController {
     var album : Collection!
     let stack = CoreDataStack.sharedInstance
     var fetchedResultsController : NSFetchedResultsController<Photo>!
-    var deleteArray: [IndexPath] = [] {
+    var deletePhotos: [IndexPath] = [] {
         didSet {
-            var title = deleteArray.isEmpty ? "New Collection" : "Delete Photos"
+            let title = deletePhotos.isEmpty ? "New Collection" : "Delete Photos"
             bottomButton.setTitle(title, for: UIControlState.normal)
         }
     }
@@ -40,17 +40,17 @@ class AlbumVC: UIViewController {
     }
     
     @IBAction func pressBottomButton(_ sender: Any) {
-        if deleteArray.isEmpty {
+        if deletePhotos.isEmpty {
             for photo in fetchedResultsController.fetchedObjects! {
                 fetchedResultsController.managedObjectContext.delete(photo)
             }
             downloadPhotos()
         } else {
-            for index in deleteArray {
+            for index in deletePhotos {
                 let photo = fetchedResultsController.object(at: index)
                 fetchedResultsController.managedObjectContext.delete(photo)
             }
-            deleteArray.removeAll()
+            deletePhotos.removeAll()
             stack.save()
         }
         
@@ -58,13 +58,11 @@ class AlbumVC: UIViewController {
     
     func setFlowLayout() {
         let space: CGFloat = 3.0
-        let widthDimension = (self.view.frame.size.width - (2 * space)) / 3
-        let heightDimension = (self.view.frame.size.height - (2 * space)) / 3
-        
+        let cellDimension = (self.view.frame.size.width - (2 * space)) / 3
         
         flowLayout.minimumLineSpacing = space
         flowLayout.minimumInteritemSpacing = space
-        flowLayout.itemSize = CGSize(width: widthDimension, height: heightDimension)
+        flowLayout.itemSize = CGSize(width: cellDimension, height: cellDimension)
     }
     
     func setMapDisplay(_ annotation: MKAnnotation) {
@@ -122,11 +120,32 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
         cell.activityIndicator.isHidden = true
-        let fetchedObject = fetchedResultsController.object(at: indexPath)
-        
-        if let photo = fetchedObject.imageData {
-            cell.photoView.image = UIImage(data: photo as Data)
+        let photo = fetchedResultsController.object(at: indexPath)
+
+        if let photoData = photo.imageData {
+            cell.photoView.image = UIImage(data: photoData as Data)
+        } else {
+            performUIUpdatesOnMain {
+                cell.activityIndicator.startAnimating()
+                cell.activityIndicator.isHidden = false
+            }
+            let url = photo.url
+            FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
+                if let photoData = data {
+                    performUIUpdatesOnMain {
+                        cell.photoView.image = UIImage(data: photoData as Data)
+                        cell.activityIndicator.stopAnimating()
+                        cell.activityIndicator.isHidden = true
+                    }
+                    photo.imageData = photoData as NSData
+                    self.stack.save()
+                } else {
+                    print(errorSt!)
+                }
+            }
+            
         }
+        setAlphaValue(cell, indexPath)
         return cell
     }
     
@@ -141,13 +160,20 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        let cell = collectionView.cellForItem(at: indexPath) as! PhotoCell
+        if let index = deletePhotos.index(of: indexPath) {
+            deletePhotos.remove(at: index)
+        } else {
+            deletePhotos.append(indexPath)
+        }
+        setAlphaValue(cell, indexPath)
     }
     
-    func setPhoto(_ cell: PhotoCell, _ photo: Photo) {
-        performUIUpdatesOnMain {
-            cell.activityIndicator.startAnimating()
-            cell.activityIndicator.isHidden = false
+    func setAlphaValue(_ cell: PhotoCell, _ index: IndexPath) {
+        if deletePhotos.index(of: index) != nil {
+            cell.photoView.alpha = 0.5
+        } else {
+            cell.photoView.alpha = 1.0
         }
     }
 }

@@ -108,7 +108,7 @@ class FlickrClient: NSObject {
             } else {
                 for photo in photosArray {
                     if let urlString = photo[Constants.FlickrResponseKeys.MediumURL] as? String {
-                        photoURls.append(urlString)
+                        photoURLs.append(urlString)
                     } else {
                         print("No URL found in photo")
                     }
@@ -138,7 +138,7 @@ class FlickrClient: NSObject {
         }
     }
     
-    func getImageData(_ url: URL, completionHandlerForGetImage: @escaping (_ data: NSData?, _ error: NSError?, _ errorString: String?) -> Void) -> URLSessionDataTask {
+    func getImageData(_ url: URL, completionHandlerForGetImage: @escaping (_ data: Data?, _ error: NSError?, _ errorString: String?) -> Void) -> URLSessionTask {
         let task = session.dataTask(with: url) { (data, response, error) in
             
             func sendError(_ error: String) {
@@ -161,11 +161,14 @@ class FlickrClient: NSObject {
             }
             
             /* GUARD: Was there any data returned? */
-            guard data != nil else {
+            guard let imageData = data else {
                 sendError("No data was returned by the request!")
                 return
             }
+            
+            completionHandlerForGetImage(imageData, nil, nil)
         }
+        
         
         // start the task!
         task.resume()
