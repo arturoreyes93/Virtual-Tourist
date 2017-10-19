@@ -17,7 +17,7 @@ public class Collection: NSManagedObject, MKAnnotation {
     public var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2DMake(latitude, longitude)
     }
-    convenience init(latitude: Double, longitude: Double) {
+    convenience init(latitude: Double, longitude: Double, context: NSManagedObjectContext) {
         if let entity = NSEntityDescription.entity(forEntityName: "Collection", in: CoreDataStack.sharedInstance.context) {
             self.init(entity: entity, insertInto: CoreDataStack.sharedInstance.context)
             self.createdAt = NSDate()

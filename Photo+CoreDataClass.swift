@@ -14,7 +14,7 @@ import CoreData
 public class Photo: NSManagedObject {
     
     
-    convenience init(url: String, imageData: Data) {
+    convenience init(url: String, imageData: Data, context: NSManagedObjectContext) {
         if let entity = NSEntityDescription.entity(forEntityName: "Photo", in: CoreDataStack.sharedInstance.context) {
             self.init(entity: entity, insertInto: CoreDataStack.sharedInstance.context)
             self.url = url

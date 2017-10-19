@@ -20,13 +20,23 @@ class AlbumVC: UIViewController {
     
     var album : Collection!
     let stack = CoreDataStack.sharedInstance
-    var fetchedResultsController : NSFetchedResultsController<Photo>!
+    
     var deletePhotos: [IndexPath] = [] {
         didSet {
             let title = deletePhotos.isEmpty ? "New Collection" : "Delete Photos"
             bottomButton.setTitle(title, for: UIControlState.normal)
         }
     }
+    
+    lazy var fetchedResultsController : NSFetchedResultsController<Photo> = { () -> NSFetchedResultsController<Photo> in
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,22 +83,19 @@ class AlbumVC: UIViewController {
     }
     
     func fetchPhotos() -> [Photo] {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
+    
         var photos = [Photo]()
         
-        if let fc = fetchedResultsController {
-            do {
-                try fc.performFetch()
-                photos = fc.fetchedObjects!
-            } catch let e as NSError {
-                print("Error while trying to perform fetch: \n\(e)\n\(fetchedResultsController)")
-            }
+        let fc = fetchedResultsController
+        do {
+            try fc.performFetch()
+            photos = fc.fetchedObjects!
+        } catch let e as NSError {
+            print("Error while trying to perform fetch: \n\(e)\n\(fetchedResultsController)")
         }
-        
         return photos
     }
+        
     
     func downloadPhotos() {
         FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude) { (success, results, errorString) in
@@ -97,7 +104,7 @@ class AlbumVC: UIViewController {
                     for photoURL in urlArray {
                         FlickrClient.sharedInstance.getImageData(URL(string: photoURL)!) { (data, error, errorSt) in
                             if let photoData = data {
-                                _ = Photo(url: photoURL, imageData: photoData)
+                                _ = Photo(url: photoURL, imageData: photoData, context: self.stack.context)
                                 self.stack.save()
                             } else {
                                 print(errorSt!)
@@ -178,8 +185,8 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     }
 }
 
-//extension AlbumVC : NSFetchedResultsControllerDelegate {
+extension AlbumVC : NSFetchedResultsControllerDelegate {
     
-//}
+}
 
 

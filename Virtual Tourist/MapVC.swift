@@ -16,32 +16,14 @@ class MapVC: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var deleteLabel: UILabel!
     
-    
     let stack = CoreDataStack.sharedInstance
-    var fetchedResultsController : NSFetchedResultsController<Collection>!
     var isDeletingAlbums = false
-    var editButtonTitle : String = "" {
-        didSet {
-            if isDeletingAlbums {
-                editButtonTitle = "Done"
-            } else {
-                editButtonTitle = "Edit"
-            }
-        }
-    }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        guard let navigationBar = self.parent else {
-            return
-        }
-        
-        navigationBar.navigationItem.rightBarButtonItem = UIBarButtonItem(title: editButtonTitle, style: UIBarButtonItemStyle.plain, target: self, action: #selector(deleteAlbums))
-        
         if !(fetchAlbums().isEmpty) {
-            mapView.addAnnotations(populateMap())
+            mapView.addAnnotations(fetchAlbums())
         }
         
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.addAlbum(_:)))
@@ -63,6 +45,15 @@ class MapVC: UIViewController {
         }
     }
 
+    @IBAction func editButtonPressed(_ sender: UIBarButtonItem) {
+        isDeletingAlbums = !isDeletingAlbums
+        if isDeletingAlbums {
+            sender.title = "Done"
+        } else {
+            sender.title = "Edit"
+        }
+        showDeleteLabel(isDeletingAlbums)
+    }
     
     
     @objc func addAlbum(_ recognizer: UIGestureRecognizer) {
@@ -70,71 +61,49 @@ class MapVC: UIViewController {
         let pressedAt = recognizer.location(in: self.mapView)
         let pressedAtCoordinate: CLLocationCoordinate2D = mapView.convert(pressedAt, toCoordinateFrom: mapView)
         
-        let newPin = MKPointAnnotation()
         let lat = pressedAtCoordinate.latitude
         let lon = pressedAtCoordinate.longitude
-        newPin.coordinate = pressedAtCoordinate
-        _ = Collection(latitude: lat, longitude: lon)
+        let album = Collection(latitude: lat, longitude: lon, context: self.stack.context)
+        
         stack.save()
-        mapView.addAnnotation(newPin)
+        mapView.addAnnotation(album)
         
     }
     
     func fetchAlbums() -> [Collection] {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Collection")
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Collection>
         var albums = [Collection]()
         
-        if let fc = fetchedResultsController {
-            do {
-                try fc.performFetch()
-                albums = fc.fetchedObjects!
-            } catch let e as NSError {
-                print("Error while trying to perform fetch: \n\(e)\n\(fetchedResultsController)")
-            }
+        do {
+            let fetchedObjects = try stack.context.fetch(fetchRequest)
+            albums = fetchedObjects as! [Collection]
+        } catch let e as NSError {
+            print("Error while trying to perform fetch: \n\(e)\n Albums")
         }
         
         return albums
     }
     
-    func populateMap() -> [MKPointAnnotation] {
-        var annotations = [MKPointAnnotation]()
-        let albums = fetchAlbums()
-        for album in albums {
-            let lat = CLLocationDegrees(album.latitude)
-            let lon = CLLocationDegrees(album.longitude)
-            let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+    func showDeleteLabel(_ isDeleting: Bool) {
+        if isDeleting {
+            UIView.animate(withDuration: 0.25, animations: {
+                self.deleteLabel.backgroundColor = .red
+                self.deleteLabel.text = "Tap Pins to Delete"
+                self.deleteLabel.textColor = .white
+                self.deleteLabel.font = UIFont(name: "Arial", size: 20)
+                self.deleteLabel.textAlignment = NSTextAlignment.center
+                self.deleteLabel.isEnabled = self.isDeletingAlbums
+                self.deleteLabel.alpha = 1.0
+            })
             
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            
-            annotations.append(annotation)
-        }
-        
-        return annotations
-
-    }
-    
-    @objc func deleteAlbums() {
-        isDeletingAlbums = !isDeletingAlbums
-        showDeleteLabel(isDeletingAlbums)
-    }
-    
-    func showDeleteLabel(_ deleting : Bool) {
-        if deleting {
-            deleteLabel.backgroundColor = .red
-            deleteLabel.text = "Tap Pins to Delete"
-            deleteLabel.textColor = .white
-            deleteLabel.font = UIFont(name: "Arial", size: 20)
-            deleteLabel.textAlignment = NSTextAlignment.center
-            deleteLabel.isEnabled = isDeletingAlbums
-            deleteLabel.alpha = 1.0
             
             //mapView.frame.origin = (deleteLabel.bounds.size.height) * (-1)
         } else {
-            deleteLabel.text = ""
-            deleteLabel.alpha = 0.0
-            deleteLabel.isEnabled = !isDeletingAlbums
+            UIView.animate(withDuration: 0.25, animations: {
+                self.deleteLabel.text = ""
+                self.deleteLabel.alpha = 0.0
+                self.deleteLabel.isEnabled = !(self.isDeletingAlbums)
+            })
         }
     }
 }

@@ -60,7 +60,11 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="KMh-Bb-aVh">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="nE2-ep-NjI"/>
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="CtM-Mk-K4I">
+                            <connections>
+                                <action selector="editButtonPressed:" destination="BYZ-38-t0r" id="jRP-Zw-cQx"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="deleteLabel" destination="ZbP-jn-ZWN" id="z2A-0b-qxy"/>
@@ -75,7 +79,7 @@
         <!--AlbumVC-->
         <scene sceneID="jnt-EF-4lD">
             <objects>
-                <viewController title="AlbumVC" id="JiS-qs-8dK" customClass="AlbumVC" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="JiS-qs-8dK" customClass="AlbumVC" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Lah-sX-raY">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
