@@ -117,9 +117,8 @@ extension MapVC: MKMapViewDelegate {
         
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            pinView!.canShowCallout = true
-            pinView!.pinTintColor = .red
-            pinView!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            pinView!.animatesDrop = true
+            
         }
         else {
             pinView!.annotation = annotation
@@ -128,8 +127,10 @@ extension MapVC: MKMapViewDelegate {
         
         return pinView
     }
-    
+
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        
+        print("pin pressed")
         
         let album = view.annotation as! Collection
         if isDeletingAlbums {

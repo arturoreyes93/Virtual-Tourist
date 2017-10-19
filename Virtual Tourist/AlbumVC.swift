@@ -33,6 +33,11 @@ class AlbumVC: UIViewController {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
+        
+        let predicate = NSPredicate(format: "collection = %@", argumentArray: [album])
+        fetchRequest.predicate = predicate
+
+        
         fetchedResultsController.delegate = self
         
         return fetchedResultsController
@@ -104,7 +109,8 @@ class AlbumVC: UIViewController {
                     for photoURL in urlArray {
                         FlickrClient.sharedInstance.getImageData(URL(string: photoURL)!) { (data, error, errorSt) in
                             if let photoData = data {
-                                _ = Photo(url: photoURL, imageData: photoData, context: self.stack.context)
+                                let photo = Photo(url: photoURL, imageData: photoData, context: self.stack.context)
+                                photo.collection = self.album
                                 self.stack.save()
                             } else {
                                 print(errorSt!)
