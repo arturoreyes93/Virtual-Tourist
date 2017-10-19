@@ -15,17 +15,7 @@ class FlickrClient: NSObject {
     
     static let sharedInstance = FlickrClient()
     
-    let methodParameters = [
-        Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
-        Constants.FlickrParameterKeys.APIKey: Constants.FlickrParameterValues.APIKey,
-        Constants.FlickrParameterKeys.BoundingBox: bboxString(),
-        Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
-        Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
-        Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
-        Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
-    ]
-    
-    func taskForSearch(_ methodParameters: [String:AnyObject], completionHandlerForSearch: @escaping (_ result: AnyObject?, _ error: NSError?, _ errorString: String?) -> Void) -> URLSessionTask {
+    func taskForSearch(_ methodParameters: [String:String], completionHandlerForSearch: @escaping (_ result: AnyObject?, _ error: NSError?, _ errorString: String?) -> Void) -> URLSessionTask {
         
         let request = NSURLRequest(url: flickrURLFromParameters(methodParameters))
         
@@ -70,6 +60,16 @@ class FlickrClient: NSObject {
     
     func getURLArray(latitude: Double, longitude: Double, _ completionHandlerForURLs: @escaping (_ success: Bool, _ results: [String]?, _ errorString: String?) -> Void) {
         
+        let methodParameters = [
+            Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
+            Constants.FlickrParameterKeys.APIKey: Constants.FlickrParameterValues.APIKey,
+            Constants.FlickrParameterKeys.BoundingBox: bboxString(latitude: latitude, longitude: longitude),
+            Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
+            Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
+            Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
+            Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
+        ]
+        
         let _ = taskForSearch(methodParameters) { (result, error, errorString) in
             
             func sendError(_ error: String) {
@@ -79,7 +79,7 @@ class FlickrClient: NSObject {
             }
             
             /* GUARD: Is "photos" key in our result? */
-            guard let photosDictionary = result[Constants.FlickrResponseKeys.Photos] as? [String:AnyObject] else {
+            guard let photosDictionary = result![Constants.FlickrResponseKeys.Photos] as? [String:AnyObject] else {
                 sendError("Cannot find keys '\(Constants.FlickrResponseKeys.Photos)' in \(result)")
                 return
             }
@@ -187,7 +187,7 @@ class FlickrClient: NSObject {
         completionHandlerForParse(parsedResult as AnyObject, nil, nil)
     }
     
-    private func bboxString() -> String {
+    private func bboxString(latitude: Double, longitude: Double) -> String {
         // ensure bbox is bounded by minimum and maximums
         if let latitude = Double("00000"), let longitude = Double("0000") {
             let minimumLon = max(longitude - Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.0)
@@ -200,7 +200,7 @@ class FlickrClient: NSObject {
         }
     }
     
-    private func flickrURLFromParameters(_ parameters: [String:AnyObject]) -> URL {
+    private func flickrURLFromParameters(_ parameters: [String:String]) -> URL {
         
         var components = URLComponents()
         components.scheme = Constants.Flickr.APIScheme

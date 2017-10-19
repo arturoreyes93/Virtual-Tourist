@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class MapVC: UIViewController, MKMapViewDelegate {
+class MapVC: UIViewController {
     
     
     @IBOutlet weak var mapView: MKMapView!
@@ -54,6 +54,15 @@ class MapVC: UIViewController, MKMapViewDelegate {
         super.viewWillAppear(animated)
         showDeleteLabel(isDeletingAlbums)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "albumSegue" {
+            let album = sender as! Collection
+            let destination = segue.destination as! AlbumVC
+            destination.album = album
+        }
+    }
+
     
     
     @objc func addAlbum(_ recognizer: UIGestureRecognizer) {
@@ -121,7 +130,7 @@ class MapVC: UIViewController, MKMapViewDelegate {
             deleteLabel.isEnabled = isDeletingAlbums
             deleteLabel.alpha = 1.0
             
-            mapView.frame.origin = (deleteLabel.bounds.size.height) * (-1)
+            //mapView.frame.origin = (deleteLabel.bounds.size.height) * (-1)
         } else {
             deleteLabel.text = ""
             deleteLabel.alpha = 0.0
@@ -130,7 +139,7 @@ class MapVC: UIViewController, MKMapViewDelegate {
     }
 }
     
-extension MKMapViewDelegate {
+extension MapVC: MKMapViewDelegate {
         
      func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let reuseId = "pin"
@@ -145,9 +154,23 @@ extension MKMapViewDelegate {
         }
         else {
             pinView!.annotation = annotation
+            pinView!.animatesDrop = true
         }
         
         return pinView
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        
+        let album = view.annotation as! Collection
+        if isDeletingAlbums {
+            mapView.removeAnnotation(album)
+            stack.context.delete(album)
+            stack.save()
+        } else {
+            mapView.deselectAnnotation(album, animated: false)
+            performSegue(withIdentifier: "albumSegue", sender: album)
+        }
     }
     
 }

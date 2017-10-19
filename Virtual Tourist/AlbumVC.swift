@@ -178,8 +178,8 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     }
 }
 
-extension AlbumVC : NSFetchedResultsControllerDelegate {
+//extension AlbumVC : NSFetchedResultsControllerDelegate {
     
-}
+//}
 
 

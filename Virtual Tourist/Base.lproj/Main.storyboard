@@ -65,7 +65,7 @@
                     <connections>
                         <outlet property="deleteLabel" destination="ZbP-jn-ZWN" id="z2A-0b-qxy"/>
                         <outlet property="mapView" destination="MWj-LT-W2q" id="uE3-DX-Iqg"/>
-                        <segue destination="JiS-qs-8dK" kind="show" id="Ez6-YE-ldb"/>
+                        <segue destination="JiS-qs-8dK" kind="show" identifier="albumSegue" id="Ez6-YE-ldb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
