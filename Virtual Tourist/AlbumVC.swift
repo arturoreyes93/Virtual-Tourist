@@ -16,15 +16,13 @@ class AlbumVC: UIViewController {
     @IBOutlet weak var mapDisplayView: MKMapView!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var bottomButton: UIButton!
+    @IBOutlet weak var bottomButton: UIBarButtonItem!
     
     var album : Collection!
     let stack = CoreDataStack.sharedInstance
-    
     var deletePhotos: [IndexPath] = [] {
         didSet {
-            let title = deletePhotos.isEmpty ? "New Collection" : "Delete Photos"
-            bottomButton.setTitle(title, for: UIControlState.normal)
+            bottomButton.title = deletePhotos.isEmpty ? "New Collection" : "Delete Selected Photos"
         }
     }
     
@@ -34,10 +32,8 @@ class AlbumVC: UIViewController {
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
         
-        let predicate = NSPredicate(format: "collection = %@", argumentArray: [album])
-        fetchRequest.predicate = predicate
+        fetchRequest.predicate = NSPredicate(format: "collection = %@", argumentArray: [album])
 
-        
         fetchedResultsController.delegate = self
         
         return fetchedResultsController
@@ -48,13 +44,14 @@ class AlbumVC: UIViewController {
         
         setFlowLayout()
         setMapDisplay(album)
+        navigationController?.setToolbarHidden(false, animated: true)
         
         if fetchPhotos().isEmpty {
             downloadPhotos()
         }
     }
-    
-    @IBAction func pressBottomButton(_ sender: Any) {
+
+    @IBAction func bottomPressed(_ sender: Any) {
         if deletePhotos.isEmpty {
             for photo in fetchedResultsController.fetchedObjects! {
                 fetchedResultsController.managedObjectContext.delete(photo)
@@ -68,7 +65,8 @@ class AlbumVC: UIViewController {
             deletePhotos.removeAll()
             stack.save()
         }
-        
+        collectionView.reloadData()
+        print("bottom button task finished")
     }
     
     func setFlowLayout() {
@@ -103,8 +101,10 @@ class AlbumVC: UIViewController {
         
     
     func downloadPhotos() {
+        
         FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude) { (success, results, errorString) in
             if success {
+                
                 if let urlArray = results {
                     for photoURL in urlArray {
                         FlickrClient.sharedInstance.getImageData(URL(string: photoURL)!) { (data, error, errorSt) in
