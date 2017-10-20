@@ -20,6 +20,7 @@ class AlbumVC: UIViewController {
     
     var album : Collection!
     let stack = CoreDataStack.sharedInstance
+    var blockOperations: [BlockOperation] = []
     var deletePhotos: [IndexPath] = [] {
         didSet {
             bottomButton.title = deletePhotos.isEmpty ? "New Collection" : "Delete Selected Photos"
@@ -133,7 +134,9 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
         cell.activityIndicator.isHidden = true
-        let photo = fetchedResultsController.object(at: indexPath)
+        var photo = fetchedResultsController.object(at: indexPath)
+        
+    
 
         if let photoData = photo.imageData {
             cell.photoView.image = UIImage(data: photoData as Data)
@@ -142,20 +145,29 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
                 cell.activityIndicator.startAnimating()
                 cell.activityIndicator.isHidden = false
             }
-            let url = photo.url
-            FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
-                if let photoData = data {
-                    performUIUpdatesOnMain {
-                        cell.photoView.image = UIImage(data: photoData as Data)
-                        cell.activityIndicator.stopAnimating()
-                        cell.activityIndicator.isHidden = true
-                    }
-                    photo.imageData = photoData as NSData
-                    self.stack.save()
-                } else {
-                    print(errorSt!)
-                }
+            while photo.imageData == nil {
+                fetchedResultsController.managedObjectContext.delete(photo)
+                stack.save()
             }
+            
+            performUIUpdatesOnMain {
+                cell.activityIndicator.stopAnimating()
+                cell.activityIndicator.isHidden = true
+            }
+            //let url = photo.url
+            //FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
+                //if let photoData = data {
+                    //performUIUpdatesOnMain {
+                        //cell.photoView.image = UIImage(data: photoData as Data)
+                        //cell.activityIndicator.stopAnimating()
+                        //cell.activityIndicator.isHidden = true
+                    //}
+                    //photo.imageData = photoData as NSData
+                    //self.stack.save()
+                //} else {
+                    //print(errorSt!)
+                //}
+            //}
             
         }
         setAlphaValue(cell, indexPath)
@@ -192,7 +204,59 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
 }
 
 extension AlbumVC : NSFetchedResultsControllerDelegate {
+    // MARK: FetchedResultsController Delegate Methods
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) { }
     
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        
+        switch type {
+        case .insert:
+            blockOperations.append(
+                BlockOperation(){ [weak self] in
+                    if let this = self {
+                        this.collectionView!.insertItems(at: [newIndexPath!])
+                    }
+                }
+            )
+        case .update:
+            blockOperations.append(
+                BlockOperation() { [weak self] in
+                    if let this = self {
+                        this.collectionView!.reloadItems(at: [indexPath!])
+                    }
+                }
+            )
+        case .delete:
+            blockOperations.append(
+                BlockOperation() { [weak self] in
+                    if let this = self {
+                        this.collectionView!.deleteItems(at: [indexPath!])
+                    }
+                }
+            )
+        case .move:
+            blockOperations.append(
+                BlockOperation() { [weak self] in
+                    if let this = self {
+                        this.collectionView!.moveItem(at: indexPath!, to: newIndexPath!)
+                    }
+                }
+            )
+        }
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        
+        // Source: https://gist.github.com/iwasrobbed/5528897
+        let batchUpdatesToPerform = {() -> Void in
+            for operation in self.blockOperations {
+                operation.start()
+            }
+        }
+        collectionView!.performBatchUpdates(batchUpdatesToPerform) { (finished) -> Void in
+            self.blockOperations.removeAll(keepingCapacity: false)
+        }
+    }
 }
 
 
