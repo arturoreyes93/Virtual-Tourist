@@ -141,19 +141,20 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
         if let photoData = photo.imageData {
             cell.photoView.image = UIImage(data: photoData as Data)
         } else {
-            performUIUpdatesOnMain {
-                cell.activityIndicator.startAnimating()
-                cell.activityIndicator.isHidden = false
-            }
-            while photo.imageData == nil {
-                fetchedResultsController.managedObjectContext.delete(photo)
-                stack.save()
-            }
+            print("No image data found in photo object for cell")
+            //performUIUpdatesOnMain {
+                //cell.activityIndicator.startAnimating()
+                //cell.activityIndic\ator.isHidden = false
+            //}
+            //while photo.imageData == nil {
+                //fetchedResultsController.managedObjectContext.delete(photo)
+                //stack.save()
+            //}
             
-            performUIUpdatesOnMain {
-                cell.activityIndicator.stopAnimating()
-                cell.activityIndicator.isHidden = true
-            }
+            //performUIUpdatesOnMain {
+                //cell.activityIndicator.stopAnimating()
+                //cell.activityIndicator.isHidden = true
+            //}
             //let url = photo.url
             //FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
                 //if let photoData = data {
