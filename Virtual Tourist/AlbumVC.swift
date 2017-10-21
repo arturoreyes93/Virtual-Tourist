@@ -19,6 +19,7 @@ class AlbumVC: UIViewController {
     @IBOutlet weak var bottomButton: UIBarButtonItem!
     
     var album : Collection!
+    var page: Int = 1
     let stack = CoreDataStack.sharedInstance
     var blockOperations: [BlockOperation] = []
     var deletePhotos: [IndexPath] = [] {
@@ -102,8 +103,7 @@ class AlbumVC: UIViewController {
         
     
     func downloadPhotos() {
-        
-        FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude) { (success, results, errorString) in
+        FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude, page: page) { (success, results, errorString, randomPage) in
             if success {
                 
                 if let urlArray = results {
@@ -135,41 +135,33 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
         cell.activityIndicator.isHidden = true
         var photo = fetchedResultsController.object(at: indexPath)
-        
-    
 
         if let photoData = photo.imageData {
             cell.photoView.image = UIImage(data: photoData as Data)
         } else {
             print("No image data found in photo object for cell")
-            //performUIUpdatesOnMain {
-                //cell.activityIndicator.startAnimating()
-                //cell.activityIndic\ator.isHidden = false
-            //}
-            //while photo.imageData == nil {
-                //fetchedResultsController.managedObjectContext.delete(photo)
-                //stack.save()
-            //}
+            cell.photoView.image = UIImage(named: "placeholder")
+            performUIUpdatesOnMain {
+                cell.activityIndicator.startAnimating()
+                cell.activityIndicator.isHidden = false
+            }
             
-            //performUIUpdatesOnMain {
-                //cell.activityIndicator.stopAnimating()
-                //cell.activityIndicator.isHidden = true
-            //}
-            //let url = photo.url
-            //FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
-                //if let photoData = data {
-                    //performUIUpdatesOnMain {
-                        //cell.photoView.image = UIImage(data: photoData as Data)
-                        //cell.activityIndicator.stopAnimating()
-                        //cell.activityIndicator.isHidden = true
-                    //}
-                    //photo.imageData = photoData as NSData
-                    //self.stack.save()
-                //} else {
-                    //print(errorSt!)
-                //}
-            //}
-            
+            let url = photo.url
+            FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
+                if let photoData = data {
+                    performUIUpdatesOnMain {
+                        cell.photoView.image = UIImage(data: photoData as Data)
+                        cell.activityIndicator.stopAnimating()
+                        cell.activityIndicator.isHidden = true
+                    }
+                    photo.imageData = photoData as NSData
+                    self.stack.save()
+                } else {
+                    print(errorSt!)
+                    self.fetchedResultsController.managedObjectContext.delete(photo)
+                    self.stack.save()
+                }
+            }
         }
         setAlphaValue(cell, indexPath)
         return cell

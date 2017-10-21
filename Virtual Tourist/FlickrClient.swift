@@ -58,7 +58,7 @@ class FlickrClient: NSObject {
         
     }
     
-    func getURLArray(latitude: Double, longitude: Double, _ completionHandlerForURLs: @escaping (_ success: Bool, _ results: [String]?, _ errorString: String?) -> Void) {
+    func getURLArray(latitude: Double, longitude: Double, page: Int, _ completionHandlerForURLs: @escaping (_ success: Bool, _ results: [String]?, _ errorString: String?, _ randomPage : Int?) -> Void) {
         
         let methodParameters = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
@@ -67,14 +67,15 @@ class FlickrClient: NSObject {
             Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
-            Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
+            Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback,
+            Constants.FlickrParameterKeys.Page: String(page)
         ]
         
         let _ = taskForSearch(methodParameters) { (result, error, errorString) in
             
             func sendError(_ error: String) {
                 print(error)
-                completionHandlerForURLs(false, nil, error)
+                completionHandlerForURLs(false, nil, error, nil)
                 
             }
             
@@ -97,6 +98,11 @@ class FlickrClient: NSObject {
                 return
             }
             
+            guard let totalPhotos = photosDictionary[Constants.FlickrResponseKeys.Total] as? Int else {
+                sendError("Cannot find key '\(Constants.FlickrResponseKeys.Total)' in \(photosDictionary)")
+                return
+            }
+            print("Total photos in this location: \(totalPhotos)")
             // pick a random page!
             let pageLimit = min(totalPages, 40)
             let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
@@ -134,7 +140,7 @@ class FlickrClient: NSObject {
                 //}
             }
             
-            completionHandlerForURLs(true, photoURLs, nil)
+            completionHandlerForURLs(true, photoURLs, nil, randomPage)
         }
     }
     
@@ -187,9 +193,9 @@ class FlickrClient: NSObject {
         completionHandlerForParse(parsedResult as AnyObject, nil, nil)
     }
     
-    private func bboxString(latitude: Double, longitude: Double) -> String {
+    private func bboxString(latitude: Double?, longitude: Double?) -> String {
         // ensure bbox is bounded by minimum and maximums
-        if let latitude = Double("00000"), let longitude = Double("0000") {
+        if let latitude = latitude, let longitude = longitude {
             let minimumLon = max(longitude - Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.0)
             let minimumLat = max(latitude - Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.0)
             let maximumLon = min(longitude + Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.1)
