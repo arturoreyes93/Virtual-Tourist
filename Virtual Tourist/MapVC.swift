@@ -42,6 +42,7 @@ class MapVC: UIViewController {
             let album = sender as! Collection
             let destination = segue.destination as! AlbumVC
             destination.album = album
+            print("destination segue album: \(album) set")
         }
     }
 
@@ -64,7 +65,7 @@ class MapVC: UIViewController {
         let lat = pressedAtCoordinate.latitude
         let lon = pressedAtCoordinate.longitude
         let album = Collection(latitude: lat, longitude: lon, context: self.stack.context)
-        
+        print("album: \(album) added")
         stack.save()
         mapView.addAnnotation(album)
         

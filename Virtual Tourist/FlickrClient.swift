@@ -69,6 +69,7 @@ class FlickrClient: NSObject {
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
             Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
         ]
+        print("bbox: \(bboxString(latitude: latitude, longitude: longitude))")
         
         let _ = taskForSearch(methodParameters) { (result, error, errorString) in
             
@@ -187,9 +188,9 @@ class FlickrClient: NSObject {
         completionHandlerForParse(parsedResult as AnyObject, nil, nil)
     }
     
-    private func bboxString(latitude: Double, longitude: Double) -> String {
+    private func bboxString(latitude: Double?, longitude: Double?) -> String {
         // ensure bbox is bounded by minimum and maximums
-        if let latitude = Double("00000"), let longitude = Double("0000") {
+        if let latitude = latitude, let longitude = longitude {
             let minimumLon = max(longitude - Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.0)
             let minimumLat = max(latitude - Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.0)
             let maximumLon = min(longitude + Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.1)

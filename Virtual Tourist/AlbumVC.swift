@@ -26,8 +26,19 @@ class AlbumVC: UIViewController {
             bottomButton.title = deletePhotos.isEmpty ? "New Collection" : "Delete Selected Photos"
         }
     }
+    lazy var fetchedResultsController : NSFetchedResultsController<Photo> = { () -> NSFetchedResultsController<Photo> in
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
+        
+        
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+    }()
     
-    var fetchedResultsController : NSFetchedResultsController<Photo>
+    
 
     
     override func viewDidLoad() {
@@ -36,10 +47,14 @@ class AlbumVC: UIViewController {
         setFlowLayout()
         setMapDisplay(album)
         navigationController?.setToolbarHidden(false, animated: true)
-        
+        let id = album.objectID
         if fetchPhotos().isEmpty {
             downloadPhotos()
+            
+            print("photos of \(id) downloaded for the first time")
         }
+        
+        print("album loaded: \(id)")
     }
 
     @IBAction func bottomPressed(_ sender: Any) {
@@ -47,6 +62,7 @@ class AlbumVC: UIViewController {
             for photo in fetchedResultsController.fetchedObjects! {
                 fetchedResultsController.managedObjectContext.delete(photo)
             }
+            stack.save()
             downloadPhotos()
         } else {
             for index in deletePhotos {
@@ -77,17 +93,8 @@ class AlbumVC: UIViewController {
     }
     
     func fetchPhotos() -> [Photo] {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
-        
-        fetchRequest.predicate = NSPredicate(format: "collection = %@", argumentArray: [album])
-        
-        fetchedResultsController.delegate = self
-
-    
         var photos = [Photo]()
-        
+    
         let fc = fetchedResultsController
         do {
             try fc.performFetch()
@@ -95,15 +102,14 @@ class AlbumVC: UIViewController {
         } catch let e as NSError {
             print("Error while trying to perform fetch: \n\(e)\n\(fetchedResultsController)")
         }
+        print("photos of \(id) fetched")
         return photos
     }
         
     
     func downloadPhotos() {
-        
         FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude) { (success, results, errorString) in
             if success {
-                
                 if let urlArray = results {
                     for photoURL in urlArray {
                         FlickrClient.sharedInstance.getImageData(URL(string: photoURL)!) { (data, error, errorSt) in
