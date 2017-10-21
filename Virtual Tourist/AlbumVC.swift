@@ -58,6 +58,7 @@ class AlbumVC: UIViewController {
             for photo in fetchedResultsController.fetchedObjects! {
                 fetchedResultsController.managedObjectContext.delete(photo)
             }
+            stack.save()
             downloadPhotos()
         } else {
             for index in deletePhotos {

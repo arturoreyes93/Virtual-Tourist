@@ -67,9 +67,8 @@ class FlickrClient: NSObject {
             Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
-            Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback,
-            Constants.FlickrParameterKeys.Page: String(page)
         ]
+        print("bbox: \(bboxString(latitude: latitude, longitude: longitude))")
         
         let _ = taskForSearch(methodParameters) { (result, error, errorString) in
             
