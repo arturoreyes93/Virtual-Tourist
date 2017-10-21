@@ -27,18 +27,8 @@ class AlbumVC: UIViewController {
         }
     }
     
-    lazy var fetchedResultsController : NSFetchedResultsController<Photo> = { () -> NSFetchedResultsController<Photo> in
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
-        
-        fetchRequest.predicate = NSPredicate(format: "collection = %@", argumentArray: [album])
+    var fetchedResultsController : NSFetchedResultsController<Photo>
 
-        fetchedResultsController.delegate = self
-        
-        return fetchedResultsController
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +77,14 @@ class AlbumVC: UIViewController {
     }
     
     func fetchPhotos() -> [Photo] {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
+        
+        fetchRequest.predicate = NSPredicate(format: "collection = %@", argumentArray: [album])
+        
+        fetchedResultsController.delegate = self
+
     
         var photos = [Photo]()
         
