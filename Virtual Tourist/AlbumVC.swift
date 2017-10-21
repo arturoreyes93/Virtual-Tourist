@@ -30,6 +30,7 @@ class AlbumVC: UIViewController {
         
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
+        fetchRequest.predicate = NSPredicate(format: "collection = %@", argumentArray: [album])
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
         
         
@@ -102,6 +103,7 @@ class AlbumVC: UIViewController {
         } catch let e as NSError {
             print("Error while trying to perform fetch: \n\(e)\n\(fetchedResultsController)")
         }
+        let id = album.objectID
         print("photos of \(id) fetched")
         return photos
     }
