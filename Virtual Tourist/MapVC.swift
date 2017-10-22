@@ -28,6 +28,8 @@ class MapVC: UIViewController {
         
         navigationItem.title = "Virtual Tourist"
         
+        //tabBarItem.isEnabled = false
+        
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.addAlbum(_:)))
         longPress.minimumPressDuration = 1.5
         mapView.addGestureRecognizer(longPress)
@@ -36,6 +38,7 @@ class MapVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setToolbarHidden(true, animated: true)
         showDeleteLabel(isDeletingAlbums)
     }
     
@@ -88,6 +91,11 @@ class MapVC: UIViewController {
     
     func showDeleteLabel(_ isDeleting: Bool) {
         if isDeleting {
+            let guide = view.safeAreaLayoutGuide
+            //self.mapView.bottomAnchor.constraint(equalTo: self.deleteLabel.topAnchor)
+            //self.view.safeAreaLayoutGuide.layoutFrame.origin = self.deleteLabel.bounds.size.height * (-1)
+            //self.mapView.frame.origin.y = self.deleteLabel.bounds.size.height * (-1)
+            //self.view.safeAreaInsets.bottom = self.deleteLabel.bounds.size.height * (-1)
             UIView.animate(withDuration: 0.25, animations: {
                 self.deleteLabel.backgroundColor = .red
                 self.deleteLabel.text = "Tap Pins to Delete"
@@ -96,17 +104,12 @@ class MapVC: UIViewController {
                 self.deleteLabel.textAlignment = NSTextAlignment.center
                 self.deleteLabel.isEnabled = self.isDeletingAlbums
                 self.deleteLabel.alpha = 1.0
-                self.mapView.frame.origin.y = self.deleteLabel.bounds.size.height * (-1)
             })
-            
-            
-            //mapView.frame.origin = (deleteLabel.bounds.size.height) * (-1)
         } else {
+            self.mapView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
             UIView.animate(withDuration: 0.25, animations: {
                 self.deleteLabel.text = ""
                 self.deleteLabel.alpha = 0.0
-                self.deleteLabel.isEnabled = !(self.isDeletingAlbums)
-                self.mapView.frame.origin.y = 0
             })
         }
     }

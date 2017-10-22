@@ -47,6 +47,9 @@ class AlbumVC: UIViewController {
         
         setFlowLayout()
         setMapDisplay(album)
+        //tabBarItem.isEnabled = true
+        //bottomButton.isEnabled = true
+        navigationController?.setToolbarHidden(false, animated: true)
         
         let id = album.objectID
         if fetchPhotos().isEmpty {
@@ -141,39 +144,28 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
-        cell.activityIndicator.isHidden = true
-        var photo = fetchedResultsController.object(at: indexPath)
+        cell.activityIndicator.startAnimating()
+        cell.activityIndicator.isHidden = false
         
-    
-
+        var photo = fetchedResultsController.object(at: indexPath)
         if let photoData = photo.imageData {
             cell.photoView.image = UIImage(data: photoData as Data)
         } else {
             print("No image data found in photo object for cell")
-            performUIUpdatesOnMain {
-                cell.activityIndicator.startAnimating()
-                cell.activityIndicator.isHidden = false
-            }
+            
             let url = photo.url
             FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
                 if let photoData = data {
-                    performUIUpdatesOnMain {
-                        cell.photoView.image = UIImage(data: photoData as Data)
-                        cell.activityIndicator.stopAnimating()
-                        cell.activityIndicator.isHidden = true
-                    }
+                    cell.photoView.image = UIImage(data: photoData as Data)
                     photo.imageData = photoData as NSData
                     self.stack.save()
                 } else {
                     print(errorSt!)
-                    performUIUpdatesOnMain {
-                        cell.activityIndicator.stopAnimating()
-                        cell.activityIndicator.isHidden = true
-                    }
                 }
             }
-            
         }
+        cell.activityIndicator.stopAnimating()
+        cell.activityIndicator.isHidden = true
         setAlphaValue(cell, indexPath)
         return cell
     }
