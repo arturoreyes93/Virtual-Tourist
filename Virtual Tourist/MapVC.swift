@@ -26,6 +26,8 @@ class MapVC: UIViewController {
             mapView.addAnnotations(fetchAlbums())
         }
         
+        navigationItem.title = "Virtual Tourist"
+        
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.addAlbum(_:)))
         longPress.minimumPressDuration = 1.5
         mapView.addGestureRecognizer(longPress)
@@ -42,7 +44,6 @@ class MapVC: UIViewController {
             let album = sender as! Collection
             let destination = segue.destination as! AlbumVC
             destination.album = album
-            print("destination segue album: \(album) set")
         }
     }
 
@@ -91,10 +92,11 @@ class MapVC: UIViewController {
                 self.deleteLabel.backgroundColor = .red
                 self.deleteLabel.text = "Tap Pins to Delete"
                 self.deleteLabel.textColor = .white
-                self.deleteLabel.font = UIFont(name: "Arial", size: 20)
+                self.deleteLabel.font = UIFont(name: "Arial", size: 18)
                 self.deleteLabel.textAlignment = NSTextAlignment.center
                 self.deleteLabel.isEnabled = self.isDeletingAlbums
                 self.deleteLabel.alpha = 1.0
+                self.mapView.frame.origin.y = self.deleteLabel.bounds.size.height * (-1)
             })
             
             
@@ -104,6 +106,7 @@ class MapVC: UIViewController {
                 self.deleteLabel.text = ""
                 self.deleteLabel.alpha = 0.0
                 self.deleteLabel.isEnabled = !(self.isDeletingAlbums)
+                self.mapView.frame.origin.y = 0
             })
         }
     }

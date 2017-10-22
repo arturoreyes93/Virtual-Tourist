@@ -56,6 +56,7 @@ struct Constants {
         static let Title = "title"
         static let MediumURL = "url_m"
         static let Pages = "pages"
+        static let perPage = "perpage"
         static let Total = "total"
     }
     

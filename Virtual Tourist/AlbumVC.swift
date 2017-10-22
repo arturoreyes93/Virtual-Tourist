@@ -20,6 +20,7 @@ class AlbumVC: UIViewController {
     
     var album : Collection!
     let stack = CoreDataStack.sharedInstance
+    var page : Int = 1
     var blockOperations: [BlockOperation] = []
     var deletePhotos: [IndexPath] = [] {
         didSet {
@@ -32,7 +33,6 @@ class AlbumVC: UIViewController {
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
         fetchRequest.predicate = NSPredicate(format: "collection = %@", argumentArray: [album])
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil) as! NSFetchedResultsController<Photo>
-        
         
         fetchedResultsController.delegate = self
         
@@ -47,7 +47,7 @@ class AlbumVC: UIViewController {
         
         setFlowLayout()
         setMapDisplay(album)
-        navigationController?.setToolbarHidden(false, animated: true)
+        
         let id = album.objectID
         if fetchPhotos().isEmpty {
             downloadPhotos()
@@ -91,6 +91,7 @@ class AlbumVC: UIViewController {
         let span = MKCoordinateSpanMake(0.12, 0.12)
         let region = MKCoordinateRegion(center: center, span: span)
         mapDisplayView.region = region
+        mapDisplayView.addAnnotation(annotation)
     }
     
     func fetchPhotos() -> [Photo] {
@@ -110,7 +111,7 @@ class AlbumVC: UIViewController {
         
     
     func downloadPhotos() {
-        FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude) { (success, results, errorString) in
+        FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude, page: page) { (success, results, errorString, randomPage) in
             if success {
                 if let urlArray = results {
                     for photoURL in urlArray {
@@ -128,6 +129,7 @@ class AlbumVC: UIViewController {
                 } else {
                     print("Could not find URLs in results")
                 }
+                self.page = ((randomPage != self.page) ? randomPage : (self.page + 1))!
             } else {
                 print(errorString!)
             }
@@ -148,33 +150,28 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
             cell.photoView.image = UIImage(data: photoData as Data)
         } else {
             print("No image data found in photo object for cell")
-            //performUIUpdatesOnMain {
-                //cell.activityIndicator.startAnimating()
-                //cell.activityIndic\ator.isHidden = false
-            //}
-            //while photo.imageData == nil {
-                //fetchedResultsController.managedObjectContext.delete(photo)
-                //stack.save()
-            //}
-            
-            //performUIUpdatesOnMain {
-                //cell.activityIndicator.stopAnimating()
-                //cell.activityIndicator.isHidden = true
-            //}
-            //let url = photo.url
-            //FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
-                //if let photoData = data {
-                    //performUIUpdatesOnMain {
-                        //cell.photoView.image = UIImage(data: photoData as Data)
-                        //cell.activityIndicator.stopAnimating()
-                        //cell.activityIndicator.isHidden = true
-                    //}
-                    //photo.imageData = photoData as NSData
-                    //self.stack.save()
-                //} else {
-                    //print(errorSt!)
-                //}
-            //}
+            performUIUpdatesOnMain {
+                cell.activityIndicator.startAnimating()
+                cell.activityIndicator.isHidden = false
+            }
+            let url = photo.url
+            FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
+                if let photoData = data {
+                    performUIUpdatesOnMain {
+                        cell.photoView.image = UIImage(data: photoData as Data)
+                        cell.activityIndicator.stopAnimating()
+                        cell.activityIndicator.isHidden = true
+                    }
+                    photo.imageData = photoData as NSData
+                    self.stack.save()
+                } else {
+                    print(errorSt!)
+                    performUIUpdatesOnMain {
+                        cell.activityIndicator.stopAnimating()
+                        cell.activityIndicator.isHidden = true
+                    }
+                }
+            }
             
         }
         setAlphaValue(cell, indexPath)
