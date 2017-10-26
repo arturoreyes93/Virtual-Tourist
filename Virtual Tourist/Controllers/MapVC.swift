@@ -18,6 +18,7 @@ class MapVC: UIViewController {
     
     let stack = CoreDataStack.sharedInstance
     var isDeletingAlbums = false
+    var mapRegion : MapViewPersistence!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,8 +29,11 @@ class MapVC: UIViewController {
         
         navigationItem.title = "Virtual Tourist"
         
-        //tabBarItem.isEnabled = false
-        
+        mapRegion = MapViewPersistence(mapView)
+        if let storedRegion = mapRegion.getLastRegion() {
+            self.mapView.region = storedRegion
+        }
+
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.addAlbum(_:)))
         longPress.minimumPressDuration = 1.5
         mapView.addGestureRecognizer(longPress)
@@ -148,6 +152,10 @@ extension MapVC: MKMapViewDelegate {
             mapView.deselectAnnotation(album, animated: false)
             performSegue(withIdentifier: "albumSegue", sender: album)
         }
+    }
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        mapRegion.storeRegion()
     }
     
 }
