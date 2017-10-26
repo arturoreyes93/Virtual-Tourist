@@ -27,6 +27,7 @@ class AlbumVC: UIViewController {
             bottomButton.title = deletePhotos.isEmpty ? "New Collection" : "Delete Selected Photos"
         }
     }
+    
     lazy var fetchedResultsController : NSFetchedResultsController<Photo> = { () -> NSFetchedResultsController<Photo> in
         
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
@@ -47,8 +48,6 @@ class AlbumVC: UIViewController {
         
         setFlowLayout()
         setMapDisplay(album)
-        //tabBarItem.isEnabled = true
-        //bottomButton.isEnabled = true
         navigationController?.setToolbarHidden(false, animated: true)
         
         let id = album.objectID
@@ -152,7 +151,6 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
             cell.photoView.image = UIImage(data: photoData as Data)
         } else {
             print("No image data found in photo object for cell")
-            
             let url = photo.url
             FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
                 if let photoData = data {

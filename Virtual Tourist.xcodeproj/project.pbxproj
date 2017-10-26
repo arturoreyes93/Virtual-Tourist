@@ -128,13 +128,6 @@
 			path = Persistence;
 			sourceTree = "<group>";
 		};
-		DD068DAF1FA153B7005C45A8 /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "New Group";
-			sourceTree = "<group>";
-		};
 		DD5B2B391F7C610200840505 = {
 			isa = PBXGroup;
 			children = (
@@ -162,7 +155,6 @@
 		DD5B2B441F7C610300840505 /* Virtual Tourist */ = {
 			isa = PBXGroup;
 			children = (
-				DD068DAF1FA153B7005C45A8 /* New Group */,
 				DD5B2B451F7C610300840505 /* AppDelegate.swift */,
 				DD51FFF81F7D878B00497F96 /* GCDBlackBox.swift */,
 				DD068DAE1FA1215C005C45A8 /* Persistence */,

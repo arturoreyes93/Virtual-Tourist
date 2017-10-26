@@ -15,14 +15,18 @@ class MapVC: UIViewController {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var deleteLabel: UILabel!
+    @IBOutlet weak var mapViewBottomConstraint: NSLayoutConstraint!
     
     let stack = CoreDataStack.sharedInstance
     var isDeletingAlbums = false
     var mapRegion : MapViewPersistence!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        let mapViewHeight = mapView.frame.height
+        
         if !(fetchAlbums().isEmpty) {
             mapView.addAnnotations(fetchAlbums())
         }
@@ -94,9 +98,14 @@ class MapVC: UIViewController {
     }
     
     func showDeleteLabel(_ isDeleting: Bool) {
+        let safeArea = view.safeAreaLayoutGuide
+        let labelHeight = self.deleteLabel.bounds.size.height
+        let viewHeight = view.frame.height
         if isDeleting {
-            let guide = view.safeAreaLayoutGuide
-            //self.mapView.bottomAnchor.constraint(equalTo: self.deleteLabel.topAnchor)
+            mapViewBottomConstraint.isActive = false
+            mapView.frame.height.isEqual(to: (viewHeight - labelHeight))
+            //self.mapView.bottomAnchor.constraint(equalTo: safeAreay.bottomAnchor).isActive = false
+            //self.mapView.bottomAnchor.constraint(equalTo: self.deleteLabel.topAnchor).isActive = true
             //self.view.safeAreaLayoutGuide.layoutFrame.origin = self.deleteLabel.bounds.size.height * (-1)
             //self.mapView.frame.origin.y = self.deleteLabel.bounds.size.height * (-1)
             //self.view.safeAreaInsets.bottom = self.deleteLabel.bounds.size.height * (-1)
@@ -110,7 +119,13 @@ class MapVC: UIViewController {
                 self.deleteLabel.alpha = 1.0
             })
         } else {
-            self.mapView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            //mapViewBottomConstraint.constant = 0
+            mapView.frame.height.isEqual(to: safeArea.layoutFrame.height)
+            mapViewBottomConstraint.isActive = true
+            //self.mapView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
+            //self.mapView.bottomAnchor.constraint(equalTo: self.deleteLabel.topAnchor).isActive = false
+            //self.mapView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            //self.mapView.frame.origin.y = 0
             UIView.animate(withDuration: 0.25, animations: {
                 self.deleteLabel.text = ""
                 self.deleteLabel.alpha = 0.0

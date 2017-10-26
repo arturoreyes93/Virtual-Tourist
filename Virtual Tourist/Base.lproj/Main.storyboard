@@ -52,7 +52,7 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="MWj-LT-W2q" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="1iN-EI-PZs"/>
+                            <constraint firstItem="MWj-LT-W2q" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" identifier="mapViewBottomConstraint" id="1iN-EI-PZs"/>
                             <constraint firstItem="ZbP-jn-ZWN" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="6iR-zp-5k7"/>
                             <constraint firstItem="MWj-LT-W2q" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Dkc-rF-qQd"/>
                             <constraint firstItem="MWj-LT-W2q" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="RyF-AL-ivv"/>
@@ -73,6 +73,7 @@
                     <connections>
                         <outlet property="deleteLabel" destination="ZbP-jn-ZWN" id="z2A-0b-qxy"/>
                         <outlet property="mapView" destination="MWj-LT-W2q" id="uE3-DX-Iqg"/>
+                        <outlet property="mapViewBottomConstraint" destination="1iN-EI-PZs" id="qmZ-Yu-p0Z"/>
                         <segue destination="JiS-qs-8dK" kind="show" identifier="albumSegue" id="Ez6-YE-ldb"/>
                     </connections>
                 </viewController>
