@@ -15,7 +15,10 @@ class MapVC: UIViewController {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var deleteLabel: UILabel!
+    
+    // constraints
     @IBOutlet weak var mapViewBottomConstraint: NSLayoutConstraint!
+    
     
     let stack = CoreDataStack.sharedInstance
     var isDeletingAlbums = false
@@ -99,11 +102,14 @@ class MapVC: UIViewController {
     
     func showDeleteLabel(_ isDeleting: Bool) {
         let safeArea = view.safeAreaLayoutGuide
+        let safeBottom = safeArea.bottomAnchor
         let labelHeight = self.deleteLabel.bounds.size.height
         let viewHeight = view.frame.height
+        let topLabelAnchor = deleteLabel.topAnchor
         if isDeleting {
-            mapViewBottomConstraint.isActive = false
+            //mapViewBottomConstraint.isActive = false
             mapView.frame.height.isEqual(to: (viewHeight - labelHeight))
+            mapView.bottomAnchor.constraint(equalTo: topLabelAnchor, constant: 0)
             //self.mapView.bottomAnchor.constraint(equalTo: safeAreay.bottomAnchor).isActive = false
             //self.mapView.bottomAnchor.constraint(equalTo: self.deleteLabel.topAnchor).isActive = true
             //self.view.safeAreaLayoutGuide.layoutFrame.origin = self.deleteLabel.bounds.size.height * (-1)
@@ -121,7 +127,8 @@ class MapVC: UIViewController {
         } else {
             //mapViewBottomConstraint.constant = 0
             mapView.frame.height.isEqual(to: safeArea.layoutFrame.height)
-            mapViewBottomConstraint.isActive = true
+            mapView.bottomAnchor.constraint(equalTo: safeBottom, constant: 0)
+            //mapViewBottomConstraint.isActive = true
             //self.mapView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
             //self.mapView.bottomAnchor.constraint(equalTo: self.deleteLabel.topAnchor).isActive = false
             //self.mapView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
