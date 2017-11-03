@@ -16,10 +16,6 @@ class MapVC: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var deleteLabel: UILabel!
     
-    // constraints
-    @IBOutlet weak var mapViewBottomConstraint: NSLayoutConstraint!
-    
-    
     let stack = CoreDataStack.sharedInstance
     var isDeletingAlbums = false
     var mapRegion : MapViewPersistence!
@@ -27,8 +23,7 @@ class MapVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        let mapViewHeight = mapView.frame.height
+        setConstrains()
         
         if !(fetchAlbums().isEmpty) {
             mapView.addAnnotations(fetchAlbums())
@@ -37,6 +32,7 @@ class MapVC: UIViewController {
         navigationItem.title = "Virtual Tourist"
         
         mapRegion = MapViewPersistence(mapView)
+        
         if let storedRegion = mapRegion.getLastRegion() {
             self.mapView.region = storedRegion
         }
@@ -86,6 +82,20 @@ class MapVC: UIViewController {
         
     }
     
+    private func setConstrains() {
+        let safeArea = view.safeAreaLayoutGuide
+        mapView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: 0).isActive = true
+        mapView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 0).isActive = true
+        mapView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 0).isActive = true
+        mapView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: 0).isActive = true
+        
+        deleteLabel.isEnabled = false
+        deleteLabel.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: 0).isActive = true
+        deleteLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 0).isActive = true
+        deleteLabel.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: 0).isActive = true
+        deleteLabel.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 0).isActive = true
+    }
+    
     func fetchAlbums() -> [Collection] {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Collection")
         var albums = [Collection]()
@@ -99,43 +109,41 @@ class MapVC: UIViewController {
         
         return albums
     }
-    
+
     func showDeleteLabel(_ isDeleting: Bool) {
         let safeArea = view.safeAreaLayoutGuide
         let safeBottom = safeArea.bottomAnchor
-        let labelHeight = self.deleteLabel.bounds.size.height
         let viewHeight = view.frame.height
+        let viewWidth = view.frame.width
         let topLabelAnchor = deleteLabel.topAnchor
+        let labelHeight = (view.frame.size.height)*(0.1)
         if isDeleting {
-            //mapViewBottomConstraint.isActive = false
-            mapView.frame.height.isEqual(to: (viewHeight - labelHeight))
-            mapView.bottomAnchor.constraint(equalTo: topLabelAnchor, constant: 0)
-            //self.mapView.bottomAnchor.constraint(equalTo: safeAreay.bottomAnchor).isActive = false
-            //self.mapView.bottomAnchor.constraint(equalTo: self.deleteLabel.topAnchor).isActive = true
-            //self.view.safeAreaLayoutGuide.layoutFrame.origin = self.deleteLabel.bounds.size.height * (-1)
-            //self.mapView.frame.origin.y = self.deleteLabel.bounds.size.height * (-1)
-            //self.view.safeAreaInsets.bottom = self.deleteLabel.bounds.size.height * (-1)
             UIView.animate(withDuration: 0.25, animations: {
+                self.mapView.frame = CGRect(x: 0, y: (labelHeight*(-1)), width: viewWidth, height: viewHeight)
+                self.deleteLabel.frame = CGRect(x: 0, y: 0, width: viewWidth, height: labelHeight)
+                self.mapView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 0).isActive = false
+                self.mapView.bottomAnchor.constraint(equalTo: topLabelAnchor, constant: 0).isActive = true
+                self.mapView.bottomAnchor.constraint(equalTo: safeBottom, constant: 0).isActive = false
+                self.mapView.setNeedsUpdateConstraints()
                 self.deleteLabel.backgroundColor = .red
                 self.deleteLabel.text = "Tap Pins to Delete"
                 self.deleteLabel.textColor = .white
                 self.deleteLabel.font = UIFont(name: "Arial", size: 18)
                 self.deleteLabel.textAlignment = NSTextAlignment.center
-                self.deleteLabel.isEnabled = self.isDeletingAlbums
+                self.deleteLabel.isEnabled = isDeleting
                 self.deleteLabel.alpha = 1.0
             })
         } else {
-            //mapViewBottomConstraint.constant = 0
-            mapView.frame.height.isEqual(to: safeArea.layoutFrame.height)
-            mapView.bottomAnchor.constraint(equalTo: safeBottom, constant: 0)
-            //mapViewBottomConstraint.isActive = true
-            //self.mapView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
-            //self.mapView.bottomAnchor.constraint(equalTo: self.deleteLabel.topAnchor).isActive = false
-            //self.mapView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-            //self.mapView.frame.origin.y = 0
             UIView.animate(withDuration: 0.25, animations: {
+                self.mapView.frame = CGRect(x: 0, y: 0, width: viewWidth, height: viewHeight)
+                self.mapView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 0).isActive = true
+                self.deleteLabel.heightAnchor.constraint(equalToConstant: labelHeight).isActive = false
+                self.mapView.bottomAnchor.constraint(equalTo: topLabelAnchor, constant: 0).isActive = false
+                self.mapView.bottomAnchor.constraint(equalTo: safeBottom, constant: 0).isActive = true
+                self.mapView.setNeedsUpdateConstraints()
                 self.deleteLabel.text = ""
                 self.deleteLabel.alpha = 0.0
+                self.deleteLabel.isEnabled = !isDeleting
             })
         }
     }

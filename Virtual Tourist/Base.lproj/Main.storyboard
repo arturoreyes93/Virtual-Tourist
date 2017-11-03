@@ -34,14 +34,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="MWj-LT-W2q">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="MWj-LT-W2q">
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="BN4-ce-8GN"/>
                                 </connections>
                             </mapView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZbP-jn-ZWN">
-                                <rect key="frame" x="0.0" y="595" width="375" height="72"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZbP-jn-ZWN">
+                                <rect key="frame" x="0.0" y="637.5" width="42" height="29.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="ZbP-jn-ZWN" secondAttribute="height" multiplier="125:16" constant="-187.5" id="esU-Ws-gzp"/>
                                 </constraints>
@@ -51,15 +52,6 @@
                             </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="MWj-LT-W2q" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" identifier="mapViewBottomConstraint" id="1iN-EI-PZs"/>
-                            <constraint firstItem="ZbP-jn-ZWN" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="6iR-zp-5k7"/>
-                            <constraint firstItem="MWj-LT-W2q" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Dkc-rF-qQd"/>
-                            <constraint firstItem="MWj-LT-W2q" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="RyF-AL-ivv"/>
-                            <constraint firstItem="ZbP-jn-ZWN" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="gX1-3y-OUB"/>
-                            <constraint firstItem="MWj-LT-W2q" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="rz9-om-7RS"/>
-                            <constraint firstItem="ZbP-jn-ZWN" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="sHS-Sy-XVM"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="KMh-Bb-aVh">
@@ -73,7 +65,6 @@
                     <connections>
                         <outlet property="deleteLabel" destination="ZbP-jn-ZWN" id="z2A-0b-qxy"/>
                         <outlet property="mapView" destination="MWj-LT-W2q" id="uE3-DX-Iqg"/>
-                        <outlet property="mapViewBottomConstraint" destination="1iN-EI-PZs" id="qmZ-Yu-p0Z"/>
                         <segue destination="JiS-qs-8dK" kind="show" identifier="albumSegue" id="Ez6-YE-ldb"/>
                     </connections>
                 </viewController>
