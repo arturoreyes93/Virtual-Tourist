@@ -129,6 +129,7 @@ class FlickrClient: NSObject {
                     let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
                     indexSet.insert(randomPhotoIndex)
                 }
+                print(indexSet)
                 
                 for index in indexSet {
                     let photo = photosArray[index] as [String: AnyObject]
@@ -139,24 +140,6 @@ class FlickrClient: NSObject {
                     }
                 }
 
-                
-                //let photoTitle = photoDictionary[Constants.FlickrResponseKeys.Title] as? String
-                
-                /* GUARD: Does our photo have a key for 'url_m'? */
-                //guard let imageUrlString = photoDictionary[Constants.FlickrResponseKeys.MediumURL] as? String else {
-                    //sendError("Cannot find key '\(Constants.FlickrResponseKeys.MediumURL)' in \(photoDictionary)")
-                    //return
-                //}
-                
-                // if an image exists at the url, set the image and title
-                //let imageURL = URL(string: imageUrlString)
-                //if let imageData = try? Data(contentsOf: imageURL!) {
-                    //performUIUpdatesOnMain {
-                        //set UI
-                    //}
-                //} else {
-                    //sendError("Image does not exist at \(imageURL)")
-                //}
             }
             
             completionHandlerForURLs(true, photoURLs, nil, randomPage)

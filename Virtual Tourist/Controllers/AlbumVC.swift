@@ -17,7 +17,7 @@ class AlbumVC: UIViewController {
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var bottomButton: UIBarButtonItem!
-    
+
     var album : Collection!
     let stack = CoreDataStack.sharedInstance
     var page : Int = 1
@@ -27,6 +27,7 @@ class AlbumVC: UIViewController {
             bottomButton.title = deletePhotos.isEmpty ? "New Collection" : "Delete Selected Photos"
         }
     }
+
     
     lazy var fetchedResultsController : NSFetchedResultsController<Photo> = { () -> NSFetchedResultsController<Photo> in
         
@@ -132,6 +133,7 @@ class AlbumVC: UIViewController {
                     print("Could not find URLs in results")
                 }
                 self.page = ((randomPage != self.page) ? randomPage : (self.page + 1))!
+                print("new page: \(self.page)")
             } else {
                 print(errorString!)
             }
@@ -143,8 +145,11 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
-        cell.activityIndicator.startAnimating()
-        cell.activityIndicator.isHidden = false
+        performUIUpdatesOnMain {
+            cell.activityIndicator.startAnimating()
+            cell.activityIndicator.isHidden = false
+        }
+        
         
         var photo = fetchedResultsController.object(at: indexPath)
         if let photoData = photo.imageData {
@@ -162,8 +167,11 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
                 }
             }
         }
-        cell.activityIndicator.stopAnimating()
-        cell.activityIndicator.isHidden = true
+        performUIUpdatesOnMain {
+            cell.activityIndicator.stopAnimating()
+            cell.activityIndicator.isHidden = true
+        }
+        
         setAlphaValue(cell, indexPath)
         return cell
     }
@@ -207,32 +215,32 @@ extension AlbumVC : NSFetchedResultsControllerDelegate {
         case .insert:
             blockOperations.append(
                 BlockOperation(){ [weak self] in
-                    if let this = self {
-                        this.collectionView!.insertItems(at: [newIndexPath!])
-                    }
-                }
-            )
-        case .update:
-            blockOperations.append(
-                BlockOperation() { [weak self] in
-                    if let this = self {
-                        this.collectionView!.reloadItems(at: [indexPath!])
+                    if let block = self {
+                        block.collectionView!.insertItems(at: [newIndexPath!])
                     }
                 }
             )
         case .delete:
             blockOperations.append(
                 BlockOperation() { [weak self] in
-                    if let this = self {
-                        this.collectionView!.deleteItems(at: [indexPath!])
+                    if let block = self {
+                        block.collectionView!.deleteItems(at: [indexPath!])
+                    }
+                }
+            )
+        case .update:
+            blockOperations.append(
+                BlockOperation() { [weak self] in
+                    if let block = self {
+                        block.collectionView!.reloadItems(at: [indexPath!])
                     }
                 }
             )
         case .move:
             blockOperations.append(
                 BlockOperation() { [weak self] in
-                    if let this = self {
-                        this.collectionView!.moveItem(at: indexPath!, to: newIndexPath!)
+                    if let block = self {
+                        block.collectionView!.moveItem(at: indexPath!, to: newIndexPath!)
                     }
                 }
             )
@@ -241,16 +249,16 @@ extension AlbumVC : NSFetchedResultsControllerDelegate {
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         
-        // Source: https://gist.github.com/iwasrobbed/5528897
         let batchUpdatesToPerform = {() -> Void in
             for operation in self.blockOperations {
                 operation.start()
             }
         }
         collectionView!.performBatchUpdates(batchUpdatesToPerform) { (finished) -> Void in
-            self.blockOperations.removeAll(keepingCapacity: false)
+            self.blockOperations.removeAll()
         }
     }
+    
 }
 
 
