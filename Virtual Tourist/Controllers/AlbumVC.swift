@@ -82,11 +82,11 @@ class AlbumVC: UIViewController {
     
     func setFlowLayout() {
         let space: CGFloat = 3.0
-        let cellDimension = (self.view.frame.size.width - (2 * space)) / 3
+        let dimension = (self.view.frame.size.width - (2 * space)) / 3
         
         flowLayout.minimumLineSpacing = space
         flowLayout.minimumInteritemSpacing = space
-        flowLayout.itemSize = CGSize(width: cellDimension, height: cellDimension)
+        flowLayout.itemSize = CGSize(width: dimension, height: dimension)
     }
     
     func setMapDisplay(_ annotation: MKAnnotation) {
@@ -172,7 +172,7 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
             cell.activityIndicator.isHidden = true
         }
         
-        setAlphaValue(cell, indexPath)
+        setAlpha(cell, indexPath)
         return cell
     }
     
@@ -193,10 +193,10 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
         } else {
             deletePhotos.append(indexPath)
         }
-        setAlphaValue(cell, indexPath)
+        setAlpha(cell, indexPath)
     }
     
-    func setAlphaValue(_ cell: PhotoCell, _ index: IndexPath) {
+    func setAlpha(_ cell: PhotoCell, _ index: IndexPath) {
         if deletePhotos.index(of: index) != nil {
             cell.photoView.alpha = 0.5
         } else {
@@ -209,6 +209,7 @@ extension AlbumVC : NSFetchedResultsControllerDelegate {
     // MARK: FetchedResultsController Delegate Methods
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) { }
     
+    // Source: https://github.com/AshFurrow/UICollectionView-NSFetchedResultsController/issues/13
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         
         switch type {
@@ -249,12 +250,12 @@ extension AlbumVC : NSFetchedResultsControllerDelegate {
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         
-        let batchUpdatesToPerform = {() -> Void in
+        let batchUpdates = {() -> Void in
             for operation in self.blockOperations {
                 operation.start()
             }
         }
-        collectionView!.performBatchUpdates(batchUpdatesToPerform) { (finished) -> Void in
+        collectionView!.performBatchUpdates(batchUpdates) { (finished) -> Void in
             self.blockOperations.removeAll()
         }
     }
