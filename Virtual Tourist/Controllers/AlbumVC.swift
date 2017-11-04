@@ -21,6 +21,8 @@ class AlbumVC: UIViewController {
     var album : Collection!
     let stack = CoreDataStack.sharedInstance
     var page : Int = 1
+    let perPage: Int = 20
+    let pageLimit = 200
     var blockOperations: [BlockOperation] = []
     var deletePhotos: [IndexPath] = [] {
         didSet {
@@ -114,25 +116,27 @@ class AlbumVC: UIViewController {
         
     
     func downloadPhotos() {
-        FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude, page: page) { (success, results, errorString, randomPage) in
+        FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude, page: page, perPage: perPage) { (success, results, errorString) in
             if success {
                 if let urlArray = results {
                     for photoURL in urlArray {
                         FlickrClient.sharedInstance.getImageData(URL(string: photoURL)!) { (data, error, errorSt) in
                             if let photoData = data {
-                                let photo = Photo(url: photoURL, imageData: photoData, context: self.stack.context)
-                                photo.collection = self.album
-                                self.stack.save()
+                                self.stack.context.performAndWait {
+                                    let photo = Photo(url: photoURL, imageData: photoData, context: self.stack.context)
+                                    photo.collection = self.album
+                                }
                             } else {
                                 print(errorSt!)
                             }
                         }
                     }
-    
+                    self.stack.save()
                 } else {
                     print("Could not find URLs in results")
                 }
-                self.page = ((randomPage != self.page) ? randomPage : (self.page + 1))!
+                //pick a random page!
+                self.page = Int(arc4random_uniform(UInt32(self.pageLimit))) + 1
                 print("new page: \(self.page)")
             } else {
                 print(errorString!)
@@ -145,12 +149,11 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
+        cell.photoView.image = UIImage(named: "placeholder")
         performUIUpdatesOnMain {
             cell.activityIndicator.startAnimating()
             cell.activityIndicator.isHidden = false
         }
-        
-        
         var photo = fetchedResultsController.object(at: indexPath)
         if let photoData = photo.imageData {
             cell.photoView.image = UIImage(data: photoData as Data)

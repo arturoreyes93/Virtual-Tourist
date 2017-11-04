@@ -58,7 +58,7 @@ class FlickrClient: NSObject {
         
     }
     
-    func getURLArray(latitude: Double, longitude: Double, page: Int, _ completionHandlerForURLs: @escaping (_ success: Bool, _ results: [String]?, _ errorString: String?, _ randomPage: Int?) -> Void) {
+    func getURLArray(latitude: Double, longitude: Double, page: Int, perPage: Int, _ completionHandlerForURLs: @escaping (_ success: Bool, _ results: [String]?, _ errorString: String?) -> Void) {
         
         let methodParameters = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
@@ -68,7 +68,8 @@ class FlickrClient: NSObject {
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
             Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback,
-            Constants.FlickrParameterKeys.Page: String(page)
+            Constants.FlickrParameterKeys.Page: String(page),
+            Constants.FlickrParameterKeys.perPage: String(perPage)
             ]
         
         print("bbox: \(bboxString(latitude: latitude, longitude: longitude))")
@@ -77,7 +78,7 @@ class FlickrClient: NSObject {
             
             func sendError(_ error: String) {
                 print(error)
-                completionHandlerForURLs(false, nil, error, 1)
+                completionHandlerForURLs(false, nil, error)
                 
             }
             
@@ -113,36 +114,42 @@ class FlickrClient: NSObject {
                 return
             }
             
-             //pick a random page!
-            let pageLimit = min(totalPages, 40)
-            let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
+            
             
             var photoURLs = [String]()
             if photosArray.count == 0 {
                 sendError("No Photos Found. Search Again.")
                 return
             } else {
-                let maxPhotos : Int = 100
-                var indexSet = Set<Int>()
-                
-                while indexSet.count != maxPhotos {
-                    let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
-                    indexSet.insert(randomPhotoIndex)
-                }
-                print(indexSet)
-                
-                for index in indexSet {
-                    let photo = photosArray[index] as [String: AnyObject]
+                for photo in photosArray {
                     if let urlString = photo[Constants.FlickrResponseKeys.MediumURL] as? String {
                         photoURLs.append(urlString)
                     } else {
                         print("No URL found in photo")
                     }
                 }
+                
+                //let maxPhotos : Int = 30
+                //var indexSet = Set<Int>()
+                
+                //while indexSet.count != maxPhotos {
+                    //let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
+                    //indexSet.insert(randomPhotoIndex)
+                //}
+                //print(indexSet)
+                
+                //for index in indexSet {
+                    //let photo = photosArray[index] as [String: AnyObject]
+                    //if let urlString = photo[Constants.FlickrResponseKeys.MediumURL] as? String {
+                        //photoURLs.append(urlString)
+                    //} else {
+                        //print("No URL found in photo")
+                    //}
+                //}
 
             }
             
-            completionHandlerForURLs(true, photoURLs, nil, randomPage)
+            completionHandlerForURLs(true, photoURLs, nil)
         }
     }
     

@@ -40,6 +40,7 @@ class MapVC: UIViewController {
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.addAlbum(_:)))
         longPress.minimumPressDuration = 1.5
         mapView.addGestureRecognizer(longPress)
+        
 
     }
     
@@ -72,14 +73,23 @@ class MapVC: UIViewController {
         
         let pressedAt = recognizer.location(in: self.mapView)
         let pressedAtCoordinate: CLLocationCoordinate2D = mapView.convert(pressedAt, toCoordinateFrom: mapView)
-        
         let lat = pressedAtCoordinate.latitude
         let lon = pressedAtCoordinate.longitude
         let album = Collection(latitude: lat, longitude: lon, context: self.stack.context)
         print("album: \(album) added")
         stack.save()
         mapView.addAnnotation(album)
+
+        //if recognizer.state == UIGestureRecognizerState.began {
         
+        //} else if recognizer.state == UIGestureRecognizerState.changed {
+            //pressedAt = recognizer.location(in: self.mapView)
+            //pressedAtCoordinate = mapView.convert(pressedAt, toCoordinateFrom: mapView)
+            //album.latitude = pressedAtCoordinate.latitude
+            //album.longitude = pressedAtCoordinate.longitude
+        //} else if recognizer.state == UIGestureRecognizerState.ended {
+            
+        //}
     }
     
     private func setConstrains() {
