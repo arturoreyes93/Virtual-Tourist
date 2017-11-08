@@ -149,12 +149,13 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
-        cell.photoView.image = UIImage(named: "placeholder")
+        
         performUIUpdatesOnMain {
+            cell.photoView.image = UIImage(named: "placeholder")
             cell.activityIndicator.startAnimating()
             cell.activityIndicator.isHidden = false
         }
-        var photo = fetchedResultsController.object(at: indexPath)
+        let photo = fetchedResultsController.object(at: indexPath)
         if let photoData = photo.imageData {
             cell.photoView.image = UIImage(data: photoData as Data)
         } else {

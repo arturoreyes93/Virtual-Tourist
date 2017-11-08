@@ -76,20 +76,19 @@ class MapVC: UIViewController {
         let lat = pressedAtCoordinate.latitude
         let lon = pressedAtCoordinate.longitude
         let album = Collection(latitude: lat, longitude: lon, context: self.stack.context)
-        print("album: \(album) added")
-        stack.save()
-        mapView.addAnnotation(album)
-
-        //if recognizer.state == UIGestureRecognizerState.began {
         
-        //} else if recognizer.state == UIGestureRecognizerState.changed {
-            //pressedAt = recognizer.location(in: self.mapView)
-            //pressedAtCoordinate = mapView.convert(pressedAt, toCoordinateFrom: mapView)
-            //album.latitude = pressedAtCoordinate.latitude
-            //album.longitude = pressedAtCoordinate.longitude
-        //} else if recognizer.state == UIGestureRecognizerState.ended {
+        if recognizer.state == UIGestureRecognizerState.began {
+            album.latitude = pressedAtCoordinate.latitude
+            album.longitude = pressedAtCoordinate.longitude
+        } else if recognizer.state == UIGestureRecognizerState.changed {
+            album.latitude = pressedAtCoordinate.latitude
+            album.longitude = pressedAtCoordinate.longitude
+        } else if recognizer.state == UIGestureRecognizerState.ended {
+            mapView.addAnnotation(album)
+            stack.save()
+            print("album: \(album) added")
             
-        //}
+        }
     }
     
     private func setConstrains() {

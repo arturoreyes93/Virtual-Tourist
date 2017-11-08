@@ -128,25 +128,6 @@ class FlickrClient: NSObject {
                         print("No URL found in photo")
                     }
                 }
-                
-                //let maxPhotos : Int = 30
-                //var indexSet = Set<Int>()
-                
-                //while indexSet.count != maxPhotos {
-                    //let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
-                    //indexSet.insert(randomPhotoIndex)
-                //}
-                //print(indexSet)
-                
-                //for index in indexSet {
-                    //let photo = photosArray[index] as [String: AnyObject]
-                    //if let urlString = photo[Constants.FlickrResponseKeys.MediumURL] as? String {
-                        //photoURLs.append(urlString)
-                    //} else {
-                        //print("No URL found in photo")
-                    //}
-                //}
-
             }
             
             completionHandlerForURLs(true, photoURLs, nil)
