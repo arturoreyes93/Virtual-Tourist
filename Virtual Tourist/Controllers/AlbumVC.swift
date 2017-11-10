@@ -149,31 +149,28 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
+        cell.photoView.image = UIImage(named: "placeholder")
+        cell.activityIndicator.isHidden = false
+        cell.activityIndicator.startAnimating()
         
-        performUIUpdatesOnMain {
-            cell.photoView.image = UIImage(named: "placeholder")
-            cell.activityIndicator.startAnimating()
-            cell.activityIndicator.isHidden = false
-        }
         let photo = fetchedResultsController.object(at: indexPath)
         if let photoData = photo.imageData {
             cell.photoView.image = UIImage(data: photoData as Data)
+            cell.activityIndicator.stopAnimating()
+            cell.activityIndicator.isHidden = true
         } else {
             print("No image data found in photo object for cell")
             let url = photo.url
             FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
                 if let photoData = data {
+                    cell.activityIndicator.stopAnimating()
+                    cell.activityIndicator.isHidden = true
                     cell.photoView.image = UIImage(data: photoData as Data)
-                    photo.imageData = photoData as NSData
                     self.stack.save()
                 } else {
                     print(errorSt!)
                 }
             }
-        }
-        performUIUpdatesOnMain {
-            cell.activityIndicator.stopAnimating()
-            cell.activityIndicator.isHidden = true
         }
         
         setAlpha(cell, indexPath)
