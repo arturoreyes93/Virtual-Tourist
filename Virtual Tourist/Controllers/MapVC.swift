@@ -78,10 +78,10 @@ class MapVC: UIViewController {
 
         if recognizer.state == UIGestureRecognizerState.began {
             self.stack.context.performAndWait {
-                let _ = Collection(latitude: lat, longitude: lon, context: self.stack.context)
+                let _ = Collection(context: self.stack.context)
             }
         } else if recognizer.state == UIGestureRecognizerState.changed {
-            if let album = Collection(latitude: lat, longitude: lon, context: self.stack.context) as Collection! {
+            if let album = Collection(context: self.stack.context) as Collection! {
                 album.latitude = pressedAtCoordinate.latitude
                 album.longitude = pressedAtCoordinate.longitude
             }
