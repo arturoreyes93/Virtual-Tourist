@@ -86,6 +86,7 @@ class MapVC: UIViewController {
         if recognizer.state == UIGestureRecognizerState.began {
             self.stack.context.performAndWait {
                 album = Collection(latitude: lat, longitude: lon, context: self.stack.context)
+                mapView.addAnnotation(album)
             }
         } else if recognizer.state == UIGestureRecognizerState.changed {
             album.latitude = pressedAtCoordinate.latitude
@@ -94,7 +95,6 @@ class MapVC: UIViewController {
             self.stack.context.performAndWait {
                 stack.save()
             }
-            mapView.addAnnotation(album)
             print("album: \(album) added")
         }
     }
@@ -176,11 +176,12 @@ extension MapVC: MKMapViewDelegate {
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.animatesDrop = true
-            
+            pinView!.isDraggable = true
         }
         else {
             pinView!.annotation = annotation
             pinView!.animatesDrop = true
+            pinView!.isDraggable = true
         }
         
         return pinView
@@ -198,6 +199,19 @@ extension MapVC: MKMapViewDelegate {
         } else {
             mapView.deselectAnnotation(album, animated: false)
             performSegue(withIdentifier: "albumSegue", sender: album)
+        }
+    }
+    
+    // Soruce: https://stackoverflow.com/questions/29776853/ios-swift-mapkit-making-an-annotation-draggable-by-the-user
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+        switch newState {
+        case .starting:
+            view.dragState = .dragging
+            view.setDragState(newState, animated: true)
+        case .ending, .canceling:
+            view.dragState = .none
+            view.setDragState(newState, animated: true)
+        default: break
         }
     }
     
