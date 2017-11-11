@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class MapVC: UIViewController {
+class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     
     @IBOutlet weak var mapView: MKMapView!
@@ -20,6 +20,7 @@ class MapVC: UIViewController {
     var isDeletingAlbums = false
     var mapRegion : MapViewPersistence!
     var album: Collection!
+    var locationManager = CLLocationManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,6 +41,7 @@ class MapVC: UIViewController {
 
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.addAlbum(_:)))
         longPress.minimumPressDuration = 0.5
+        longPress.delegate = self
         mapView.addGestureRecognizer(longPress)
         
 
@@ -91,6 +93,8 @@ class MapVC: UIViewController {
         } else if recognizer.state == UIGestureRecognizerState.changed {
             album.latitude = pressedAtCoordinate.latitude
             album.longitude = pressedAtCoordinate.longitude
+            locationManager.startUpdatingLocation()
+            
         } else if recognizer.state == UIGestureRecognizerState.ended {
             self.stack.context.performAndWait {
                 stack.save()
