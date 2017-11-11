@@ -2,7 +2,7 @@
 //  Photo+CoreDataProperties.swift
 //  Virtual Tourist
 //
-//  Created by Arturo Reyes on 9/30/17.
+//  Created by Arturo Reyes on 11/10/17.
 //  Copyright © 2017 Arturo Reyes. All rights reserved.
 //
 //

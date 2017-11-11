@@ -23,6 +23,7 @@ class AlbumVC: UIViewController {
     var page : Int = 1
     let perPage: Int = 20
     let pageLimit = 200
+    var photoDownloads: Int = 0
     var blockOperations: [BlockOperation] = []
     var deletePhotos: [IndexPath] = [] {
         didSet {
@@ -63,20 +64,25 @@ class AlbumVC: UIViewController {
         print("album loaded: \(id)")
     }
 
+    
     @IBAction func bottomPressed(_ sender: Any) {
         if deletePhotos.isEmpty {
-            for photo in fetchedResultsController.fetchedObjects! {
-                fetchedResultsController.managedObjectContext.delete(photo)
+            self.stack.context.performAndWait {
+                for photo in fetchedResultsController.fetchedObjects! {
+                    fetchedResultsController.managedObjectContext.delete(photo)
+                }
+                stack.save()
             }
-            stack.save()
             downloadPhotos()
         } else {
-            for index in deletePhotos {
-                let photo = fetchedResultsController.object(at: index)
-                fetchedResultsController.managedObjectContext.delete(photo)
+            self.stack.context.performAndWait {
+                for index in deletePhotos {
+                    let photo = fetchedResultsController.object(at: index)
+                    fetchedResultsController.managedObjectContext.delete(photo)
+                }
+                deletePhotos.removeAll()
+                stack.save()
             }
-            deletePhotos.removeAll()
-            stack.save()
         }
         collectionView.reloadData()
         print("bottom button task finished")
@@ -119,19 +125,12 @@ class AlbumVC: UIViewController {
         FlickrClient.sharedInstance.getURLArray(latitude: album.latitude, longitude: album.longitude, page: page, perPage: perPage) { (success, results, errorString) in
             if success {
                 if let urlArray = results {
-                    for photoURL in urlArray {
-                        FlickrClient.sharedInstance.getImageData(URL(string: photoURL)!) { (data, error, errorSt) in
-                            if let photoData = data {
-                                self.stack.context.performAndWait {
-                                    let photo = Photo(url: photoURL, imageData: photoData, context: self.stack.context)
-                                    photo.collection = self.album
-                                }
-                            } else {
-                                print(errorSt!)
-                            }
+                    self.stack.context.performAndWait {
+                        for photoURL in urlArray {
+                            let photo = Photo(url: photoURL, context: self.stack.context)
+                            photo.collection = self.album
                         }
                     }
-                    self.stack.save()
                 } else {
                     print("Could not find URLs in results")
                 }
@@ -143,35 +142,36 @@ class AlbumVC: UIViewController {
             }
         }
     }
+    
+    func readyToSaveContext() -> Bool {
+        if let fetchedItems = fetchedResultsController.fetchedObjects as [Photo]? {
+            for photo in fetchedItems {
+                if photo.imageData == nil {
+                    return false
+                }
+            }
+        } else {
+            print("Fetched items not found")
+            return false
+        }
+        return true
+    }
 }
 
 extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
-        cell.photoView.image = UIImage(named: "placeholder")
-        cell.activityIndicator.isHidden = false
-        cell.activityIndicator.startAnimating()
         
-        let photo = fetchedResultsController.object(at: indexPath)
-        if let photoData = photo.imageData {
-            cell.photoView.image = UIImage(data: photoData as Data)
-            cell.activityIndicator.stopAnimating()
-            cell.activityIndicator.isHidden = true
-        } else {
-            print("No image data found in photo object for cell")
-            let url = photo.url
-            FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
-                if let photoData = data {
-                    cell.activityIndicator.stopAnimating()
-                    cell.activityIndicator.isHidden = true
-                    cell.photoView.image = UIImage(data: photoData as Data)
-                    self.stack.save()
-                } else {
-                    print(errorSt!)
-                }
-            }
+        performUIUpdatesOnMain {
+            print("setting placeholder")
+            cell.photoView.image = UIImage(named: "placeholder")
+            cell.activityIndicator.isHidden = false
+            cell.activityIndicator.startAnimating()
         }
+
+        let photo = fetchedResultsController.object(at: indexPath)
+        setCellPhoto(cell: cell, photo: photo)
         
         setAlpha(cell, indexPath)
         return cell
@@ -184,6 +184,7 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
             return numberOfItems
         }
         numberOfItems = fetchedItems
+        print(numberOfItems)
         return numberOfItems
     }
     
@@ -195,6 +196,37 @@ extension AlbumVC : UICollectionViewDelegate, UICollectionViewDataSource {
             deletePhotos.append(indexPath)
         }
         setAlpha(cell, indexPath)
+    }
+    
+    func setCellPhoto(cell: PhotoCell, photo: Photo) {
+        
+        if let photoData = photo.imageData {
+            performUIUpdatesOnMain {
+                cell.photoView.image = UIImage(data: photoData as Data)
+                cell.activityIndicator.stopAnimating()
+                cell.activityIndicator.isHidden = true
+            }
+            
+        } else {
+            print("No image data found in photo object for cell")
+            let url = photo.url
+            FlickrClient.sharedInstance.getImageData(URL(string: url!)!) { (data, error, errorSt) in
+                if let photoData = data {
+                    performUIUpdatesOnMain {
+                        cell.activityIndicator.stopAnimating()
+                        cell.activityIndicator.isHidden = true
+                        cell.photoView.image = UIImage(data: photoData)
+                    }
+                    
+                    self.stack.context.performAndWait {
+                        photo.imageData = photoData as NSData
+                    }
+                } else {
+                    print(errorSt!)
+                }
+            }
+        }
+        
     }
     
     func setAlpha(_ cell: PhotoCell, _ index: IndexPath) {
