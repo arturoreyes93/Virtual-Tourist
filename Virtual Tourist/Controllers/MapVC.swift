@@ -19,6 +19,7 @@ class MapVC: UIViewController {
     let stack = CoreDataStack.sharedInstance
     var isDeletingAlbums = false
     var mapRegion : MapViewPersistence!
+    var album: Collection!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,22 +76,26 @@ class MapVC: UIViewController {
         let pressedAtCoordinate: CLLocationCoordinate2D = mapView.convert(pressedAt, toCoordinateFrom: mapView)
         let lat = pressedAtCoordinate.latitude
         let lon = pressedAtCoordinate.longitude
+        
+        // make album global variable
+        if album != nil  {
+            album.latitude = lat
+            album.longitude = lon
+        }
 
         if recognizer.state == UIGestureRecognizerState.began {
             self.stack.context.performAndWait {
-                let _ = Collection(context: self.stack.context)
+                album = Collection(latitude: lat, longitude: lon, context: self.stack.context)
             }
         } else if recognizer.state == UIGestureRecognizerState.changed {
-            if let album = Collection(context: self.stack.context) as Collection! {
-                album.latitude = pressedAtCoordinate.latitude
-                album.longitude = pressedAtCoordinate.longitude
-            }
+            album.latitude = pressedAtCoordinate.latitude
+            album.longitude = pressedAtCoordinate.longitude
         } else if recognizer.state == UIGestureRecognizerState.ended {
-            if let album = Collection(latitude: lat, longitude: lon, context: self.stack.context) as Collection! {
-                mapView.addAnnotation(album)
+            self.stack.context.performAndWait {
                 stack.save()
-                print("album: \(album) added")
             }
+            mapView.addAnnotation(album)
+            print("album: \(album) added")
         }
     }
     
