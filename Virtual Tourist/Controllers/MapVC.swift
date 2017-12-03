@@ -20,7 +20,6 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     var isDeletingAlbums = false
     var mapRegion : MapViewPersistence!
     var album: Collection!
-    var locationManager = CLLocationManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,7 +78,6 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         let lat = pressedAtCoordinate.latitude
         let lon = pressedAtCoordinate.longitude
         
-        // make album global variable
         if album != nil  {
             album.latitude = lat
             album.longitude = lon
@@ -88,17 +86,15 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         if recognizer.state == UIGestureRecognizerState.began {
             self.stack.context.performAndWait {
                 album = Collection(latitude: lat, longitude: lon, context: self.stack.context)
-                mapView.addAnnotation(album)
             }
         } else if recognizer.state == UIGestureRecognizerState.changed {
             album.latitude = pressedAtCoordinate.latitude
             album.longitude = pressedAtCoordinate.longitude
-            locationManager.startUpdatingLocation()
-            
         } else if recognizer.state == UIGestureRecognizerState.ended {
             self.stack.context.performAndWait {
                 stack.save()
             }
+            mapView.addAnnotation(album)
             print("album: \(album) added")
         }
     }
